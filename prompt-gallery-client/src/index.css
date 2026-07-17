@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "Sora", "Inter", system-ui, sans-serif;
+  --color-accent: #fb923c;
+  --color-accent-hover: #f97316;
+  --color-surface: #ffffff;
+  --color-surface-muted: #fafafa;
+  --color-text: #0a0a0a;
+  --color-text-muted: #737373;
+  --color-border: #e5e5e5;
+}
+
+.dark {
+  --color-surface: #0a0a0a;
+  --color-surface-muted: #171717;
+  --color-text: #fafafa;
+  --color-text-muted: #a3a3a3;
+  --color-border: #262626;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Masonry grid */
+.masonry-grid {
+  display: flex;
+  margin-left: -10px;
+  width: auto;
+}
+
+.masonry-grid_column {
+  padding-left: 10px;
+  background-clip: padding-box;
+}
+
+.masonry-grid_column > * {
+  margin-bottom: 10px;
+}
+
+@media (min-width: 640px) {
+  .masonry-grid {
+    margin-left: -16px;
+  }
+
+  .masonry-grid_column {
+    padding-left: 16px;
+  }
+
+  .masonry-grid_column > * {
+    margin-bottom: 16px;
+  }
+}
+
+/* Hide scrollbar for horizontal scroll sections */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
