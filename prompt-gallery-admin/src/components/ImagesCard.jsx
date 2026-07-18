@@ -4,14 +4,21 @@ import { Field } from './ui/Field'
 import { TextInput } from './ui/TextInput'
 import { UploadBox } from './ui/UploadBox'
 
-export function ImagesCard({ images, onAdd, onUpdate, onReplace, onRemove }) {
+export function ImagesCard({ images, onAdd, onUpdate, onReplace, onRemove, error }) {
   return (
     <Card title="Images" description="Featured image, alt text, and filenames.">
+      {error && (
+        <p className="mb-3 mt-0 text-[12px] font-medium text-red">
+          {typeof error === 'string' ? error : 'Upload failed'}
+        </p>
+      )}
       <div className="flex flex-col gap-3.5">
         {images.map((img, i) => (
           <div
             key={img.id}
-            className="rounded-xl border border-border bg-[#FCFCFD] p-3.5"
+            className={`rounded-xl border bg-surface-muted p-3.5 ${
+              error && i === 0 ? 'border-red' : 'border-border'
+            }`}
           >
             <div className="mb-2.5 flex items-center justify-between">
               <span className="text-[11.5px] font-bold tracking-[0.04em] text-mute-light uppercase">
@@ -30,7 +37,21 @@ export function ImagesCard({ images, onAdd, onUpdate, onReplace, onRemove }) {
 
             <div className="mb-3">
               <UploadBox src={img.src} onFile={(file) => onReplace(img.id, file)} />
+              {img.uploading && (
+                <p className="mt-1.5 mb-0 text-[11px] text-mute-light">Uploading to Cloudinary…</p>
+              )}
             </div>
+
+            <Field
+              label="Image URL"
+              hint="Paste a direct image URL if upload fails (Cloudinary / CDN link)."
+            >
+              <TextInput
+                value={img.src?.startsWith('blob:') ? '' : img.src || ''}
+                placeholder="https://…"
+                onChange={(e) => onUpdate(img.id, 'src', e.target.value.trim())}
+              />
+            </Field>
 
             <Field label="Alt text" hint="Used by screen readers and image search.">
               <TextInput

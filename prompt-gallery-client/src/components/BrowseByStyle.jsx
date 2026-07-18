@@ -23,6 +23,7 @@ export default function BrowseByStyle() {
   useEffect(() => {
     getCategories()
       .then(setCategories)
+      .catch(() => setCategories([]))
       .finally(() => setLoading(false))
   }, [])
 

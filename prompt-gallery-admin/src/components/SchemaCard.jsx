@@ -32,7 +32,7 @@ export function SchemaCard({ schemaChecks, onToggle, onGenerate }) {
       <button
         type="button"
         onClick={onGenerate}
-        className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-border bg-white py-2 text-[13px] font-medium text-ink transition-colors hover:bg-[#F8F9FB]"
+        className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-border bg-surface py-2 text-[13px] font-medium text-ink transition-colors hover:bg-surface-muted"
       >
         <Code2 size={14} /> Generate JSON-LD
       </button>

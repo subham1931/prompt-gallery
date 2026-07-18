@@ -68,7 +68,7 @@ export function SeoCard({
           >
             <span
               className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full ${
-                c.ok ? 'bg-green-tint text-green' : 'bg-[#F1F2F5] text-mute-light'
+                c.ok ? 'bg-green-tint text-green' : 'bg-surface-subtle text-mute-light'
               }`}
             >
               <Check size={9} strokeWidth={3} />
@@ -130,7 +130,7 @@ export function SeoCard({
         type="button"
         onClick={onGenerateSeo}
         disabled={generatingSeo}
-        className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-border bg-white py-2 text-[13px] font-medium text-ink transition-colors hover:bg-[#F8F9FB] disabled:cursor-wait disabled:opacity-70"
+        className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-border bg-surface py-2 text-[13px] font-medium text-ink transition-colors hover:bg-surface-muted disabled:cursor-wait disabled:opacity-70"
       >
         {generatingSeo ? (
           <Loader2 size={14} className="animate-spin-slow" />

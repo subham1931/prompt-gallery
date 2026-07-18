@@ -1,12 +1,20 @@
 import { Link } from 'react-router-dom'
-import { Save } from 'lucide-react'
+import { Loader2, Save } from 'lucide-react'
 import { Badge } from './ui/Badge'
+import { ThemeToggle } from './ThemeToggle'
 
-export function TopBar({ title, seoScore, onSave }) {
+export function TopBar({ title, seoScore, onSave, saving = false, isEdit = false }) {
   const tone = seoScore >= 80 ? 'green' : 'orange'
+  const saveLabel = saving
+    ? isEdit
+      ? 'Saving…'
+      : 'Creating…'
+    : isEdit
+      ? 'Save'
+      : 'Create prompt'
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-white/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-border bg-header backdrop-blur-md">
       <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-4 px-6 py-3">
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 text-[12px] text-mute-light">
@@ -25,18 +33,23 @@ export function TopBar({ title, seoScore, onSave }) {
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
+          <ThemeToggle />
           <Link
             to="/"
-            className="rounded-lg border border-border bg-white px-3.5 py-2 text-[13px] font-medium text-mute no-underline transition-colors hover:bg-[#F1F2F5] hover:text-ink"
+            className={`rounded-lg border border-border bg-surface px-3.5 py-2 text-[13px] font-medium text-mute no-underline transition-colors hover:bg-surface-subtle hover:text-ink ${
+              saving ? 'pointer-events-none opacity-50' : ''
+            }`}
           >
             Cancel
           </Link>
           <button
             type="button"
             onClick={onSave}
-            className="flex cursor-pointer items-center gap-1.5 rounded-lg border-none bg-orange px-3.5 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-orange-dark"
+            disabled={saving}
+            className="flex cursor-pointer items-center gap-1.5 rounded-lg border-none bg-orange px-3.5 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-orange-dark disabled:cursor-wait disabled:opacity-70"
           >
-            <Save size={14} /> Save
+            {saving ? <Loader2 size={14} className="animate-spin-slow" /> : <Save size={14} />}
+            {saveLabel}
           </button>
         </div>
       </div>

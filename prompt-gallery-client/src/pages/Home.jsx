@@ -1,8 +1,8 @@
 import { Sparkles } from 'lucide-react'
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { getPrompts } from '../api'
+import { getPrompts, searchPrompts } from '../api'
 import PromptMasonryGrid from '../components/PromptMasonryGrid'
 import Tabs from '../components/Tabs'
 import BrowseByStyle from '../components/BrowseByStyle'
@@ -25,27 +25,29 @@ export default function Home() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
   useEffect(() => {
-    getPrompts({ sort: activeTab }).then(setAllPrompts)
-  }, [activeTab])
+    let cancelled = false
+    const load = searchQuery.trim()
+      ? searchPrompts(searchQuery)
+      : getPrompts({ sort: activeTab })
 
-  const filteredPrompts = useMemo(() => {
-    let result = allPrompts
+    load
+      .then((data) => {
+        if (!cancelled) {
+          setAllPrompts(data || [])
+          setVisibleCount(PAGE_SIZE)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setAllPrompts([])
+      })
 
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase()
-      result = result.filter(
-        (p) =>
-          p.title.toLowerCase().includes(q) ||
-          p.excerpt.toLowerCase().includes(q) ||
-          p.tags.some((t) => t.toLowerCase().includes(q))
-      )
+    return () => {
+      cancelled = true
     }
+  }, [activeTab, searchQuery])
 
-    return result
-  }, [allPrompts, searchQuery])
-
-  const visiblePrompts = filteredPrompts.slice(0, visibleCount)
-  const hasMore = visibleCount < filteredPrompts.length
+  const visiblePrompts = allPrompts.slice(0, visibleCount)
+  const hasMore = visibleCount < allPrompts.length
 
   const handleTabChange = (tab) => {
     setActiveTab(tab)

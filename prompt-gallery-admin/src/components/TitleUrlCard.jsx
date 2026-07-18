@@ -19,20 +19,50 @@ export function TitleUrlCard({
   setTags,
   trending,
   setTrending,
+  status = 'published',
+  setStatus,
+  errors = {},
+  categories = CATEGORIES,
 }) {
+  const categoryOptions = categories?.length ? categories : CATEGORIES
   return (
     <Card title="Details" description="Title, URL, model, and gallery metadata.">
-      <Field label="Prompt title" required counter={`${title.length}/70`}>
-        <TextInput value={title} onChange={(e) => setTitle(e.target.value)} maxLength={70} />
+      {setStatus && (
+        <Field label="Status">
+          <Pills
+            value={status === 'draft' ? 'Draft' : 'Published'}
+            onChange={(v) => setStatus(v === 'Draft' ? 'draft' : 'published')}
+            options={['Published', 'Draft']}
+          />
+        </Field>
+      )}
+
+      <Field
+        label="Prompt title"
+        required
+        counter={`${title.length}/70`}
+        error={errors.title}
+      >
+        <TextInput
+          value={title}
+          error={Boolean(errors.title)}
+          onChange={(e) => setTitle(e.target.value)}
+          maxLength={70}
+        />
       </Field>
 
-      <Field label="URL slug" hint="Auto-generated from the title — edit to override.">
+      <Field
+        label="URL slug"
+        hint={!errors.slug ? 'Auto-generated from the title — edit to override.' : undefined}
+        error={errors.slug}
+      >
         <div className="flex gap-2">
-          <div className="flex shrink-0 items-center whitespace-nowrap rounded-[10px] bg-[#F1F2F5] px-3 text-[12.5px] text-mute-light">
+          <div className="flex shrink-0 items-center whitespace-nowrap rounded-[10px] bg-surface-subtle px-3 text-[12.5px] text-mute-light">
             /prompts/
           </div>
           <TextInput
             value={slug}
+            error={Boolean(errors.slug)}
             onChange={(e) => {
               setSlug(e.target.value)
               setSlugEdited(true)
@@ -49,13 +79,22 @@ export function TitleUrlCard({
         <Pills value={aiModel} onChange={setAiModel} options={AI_MODELS} />
       </Field>
 
-      <Field label="Category" hint="Primary gallery category for this prompt.">
+      <Field
+        label="Category"
+        hint={!errors.category ? 'Primary gallery category for this prompt.' : undefined}
+        error={errors.category}
+      >
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="w-full cursor-pointer rounded-[10px] border border-border bg-[#FCFCFD] px-[13px] py-2.5 text-[13.5px] text-ink outline-none transition-[border-color,box-shadow] focus:border-orange focus:bg-white focus:shadow-[0_0_0_3px_var(--color-orange-tint)]"
+          aria-invalid={Boolean(errors.category) || undefined}
+          className={`w-full cursor-pointer rounded-[10px] border bg-surface-muted px-[13px] py-2.5 text-[13.5px] text-ink outline-none transition-[border-color,box-shadow] focus:bg-surface ${
+            errors.category
+              ? 'border-red shadow-[0_0_0_3px_rgba(211,59,59,0.12)]'
+              : 'border-border focus:border-orange focus:shadow-[0_0_0_3px_var(--color-orange-tint)]'
+          }`}
         >
-          {CATEGORIES.map((c) => (
+          {categoryOptions.map((c) => (
             <option key={c} value={c}>
               {c}
             </option>

@@ -11,7 +11,7 @@ export function Pills({ value, onChange, options }) {
             className={`cursor-pointer rounded-[9px] border px-[15px] py-2 text-[13px] font-semibold transition-all duration-150 ${
               active
                 ? 'border-orange bg-orange-tint text-orange-dark'
-                : 'border-border bg-white text-mute'
+                : 'border-border bg-surface text-mute'
             }`}
           >
             {opt}

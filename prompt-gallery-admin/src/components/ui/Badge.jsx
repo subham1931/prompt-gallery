@@ -1,5 +1,5 @@
 const tones = {
-  default: 'bg-[#F1F2F5] text-mute',
+  default: 'bg-surface-subtle text-mute',
   orange: 'bg-orange-tint text-orange-dark',
   green: 'bg-green-tint text-green',
 }

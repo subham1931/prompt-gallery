@@ -36,7 +36,7 @@ export function UploadBox({ src, onFile, compact = false }) {
         }}
         onClick={() => inputRef.current?.click()}
         className={`cursor-pointer overflow-hidden rounded-xl border-[1.5px] border-dashed transition-all duration-150 ${
-          drag ? 'border-orange bg-orange-tint' : 'border-border bg-[#FCFCFD]'
+          drag ? 'border-orange bg-orange-tint' : 'border-border bg-surface-muted'
         }`}
       >
         {src ? (

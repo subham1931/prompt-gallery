@@ -12,7 +12,7 @@ export function Card({
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <section className="rounded-xl border border-border bg-white">
+    <section className="rounded-xl border border-border bg-surface">
       <div
         role={collapsible ? 'button' : undefined}
         tabIndex={collapsible ? 0 : undefined}

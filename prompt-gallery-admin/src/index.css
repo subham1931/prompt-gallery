@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
@@ -7,6 +9,9 @@
   --color-orange-dark: #e56a00;
   --color-orange-tint: #fff2e6;
   --color-bg: #f8f9fb;
+  --color-surface: #ffffff;
+  --color-surface-muted: #fcfcfd;
+  --color-surface-subtle: #f1f2f5;
   --color-border: #e7e9ee;
   --color-ink: #15171c;
   --color-mute: #6b7280;
@@ -14,6 +19,25 @@
   --color-green: #1a8245;
   --color-green-tint: #e6f6ec;
   --color-red: #d33b3b;
+  --color-header: rgba(248, 249, 251, 0.85);
+}
+
+.dark {
+  --color-orange: #ff8a1f;
+  --color-orange-dark: #ff9a3d;
+  --color-orange-tint: #3a2410;
+  --color-bg: #0f1115;
+  --color-surface: #171a21;
+  --color-surface-muted: #1c2028;
+  --color-surface-subtle: #222733;
+  --color-border: #2a3140;
+  --color-ink: #f3f4f6;
+  --color-mute: #9aa3b2;
+  --color-mute-light: #7b8494;
+  --color-green: #3ecf7a;
+  --color-green-tint: #143524;
+  --color-red: #f07178;
+  --color-header: rgba(15, 17, 21, 0.88);
 }
 
 * {

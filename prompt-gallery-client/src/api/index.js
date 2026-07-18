@@ -1,83 +1,116 @@
-import { prompts, categories, popularFilters } from '../data/mockData'
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/$/, '')
+
+async function request(path) {
+  const res = await fetch(`${API_URL}${path}`)
+  const payload = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(payload.error || `Request failed (${res.status})`)
+  }
+  return payload
+}
 
 const slugify = (text) =>
-  text
+  String(text || '')
     .toLowerCase()
     .replace(/&/g, 'and')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
 
-const categorySlugMap = Object.fromEntries(
-  categories.map((c) => [c.name.toLowerCase(), c.slug])
-)
+let categoryCache = null
 
-export function getCategorySlug(name) {
-  return categorySlugMap[name.toLowerCase()] || slugify(name)
+async function loadCategories() {
+  if (categoryCache) return categoryCache
+  const { data } = await request('/api/categories')
+  categoryCache = data || []
+  return categoryCache
 }
 
-export function getPrompts({ sort = 'latest', filter = null, limit = null } = {}) {
-  let result = [...prompts]
+export function getCategorySlug(name) {
+  return slugify(name)
+}
 
+export async function getPrompts({ sort = 'latest', filter = null, limit = null } = {}) {
+  const params = new URLSearchParams()
+  params.set('sort', sort === 'popular' ? 'popular' : sort === 'trending' ? 'trending' : 'latest')
+  if (limit) params.set('limit', String(limit))
+  if (filter) params.set('category', filter)
+
+  const { data } = await request(`/api/prompts?${params}`)
+  let result = data || []
+
+  // Tag-based filter fallback if category name didn't match enough
   if (filter) {
     const filterLower = filter.toLowerCase()
-    result = result.filter(
+    const byCategory = result.filter((p) => p.category?.toLowerCase() === filterLower)
+    if (byCategory.length) {
+      result = byCategory
+    } else {
+      // Refetch all published and filter by tag locally for browse chips
+      const all = await request('/api/prompts?sort=latest')
+      result = (all.data || []).filter(
+        (p) =>
+          p.category?.toLowerCase() === filterLower ||
+          (p.tags || []).some((t) => t.toLowerCase() === filterLower),
+      )
+      if (sort === 'trending' || sort === 'popular') {
+        result.sort((a, b) => b.likeCount - a.likeCount)
+      }
+      if (limit) result = result.slice(0, limit)
+    }
+  }
+
+  return result
+}
+
+export async function getPromptBySlug(slug) {
+  try {
+    const { data } = await request(`/api/prompts/${encodeURIComponent(slug)}`)
+    return data
+  } catch {
+    return null
+  }
+}
+
+export async function getCategories() {
+  return loadCategories()
+}
+
+export async function getCategoryBySlug(slug) {
+  const cats = await loadCategories()
+  return cats.find((c) => c.slug === slug) || null
+}
+
+export async function getPromptsByCategorySlug(slug) {
+  const category = await getCategoryBySlug(slug)
+  if (!category) return []
+
+  const { data } = await request(
+    `/api/prompts?category=${encodeURIComponent(category.name)}&sort=latest`,
+  )
+  let result = data || []
+
+  // Also include prompts tagged with this category name/slug
+  if (result.length === 0) {
+    const all = await request('/api/prompts?sort=latest')
+    result = (all.data || []).filter(
       (p) =>
-        p.category.toLowerCase() === filterLower ||
-        p.tags.some((t) => t.toLowerCase() === filterLower)
+        getCategorySlug(p.category) === slug ||
+        (p.tags || []).some((t) => getCategorySlug(t) === slug),
     )
   }
 
-  if (sort === 'trending') {
-    result.sort((a, b) => b.likeCount - a.likeCount)
-  } else if (sort === 'popular') {
-    result.sort((a, b) => b.likeCount * 0.7 + new Date(b.date) - (a.likeCount * 0.7 + new Date(a.date)))
-  } else {
-    result.sort((a, b) => new Date(b.date) - new Date(a.date))
-  }
-
-  if (limit) {
-    result = result.slice(0, limit)
-  }
-
-  return Promise.resolve(result)
+  return result
 }
 
-export function getPromptBySlug(slug) {
-  const prompt = prompts.find((p) => p.slug === slug)
-  return Promise.resolve(prompt || null)
-}
+export async function getRelatedPrompts(slug, count = 5) {
+  const current = await getPromptBySlug(slug)
+  const { data: others } = await request('/api/prompts?sort=latest&limit=50')
+  const pool = (others || []).filter((p) => p.slug !== slug)
 
-export function getCategories() {
-  return Promise.resolve(categories)
-}
+  if (!current) return pool.slice(0, count)
 
-export function getCategoryBySlug(slug) {
-  const category = categories.find((c) => c.slug === slug)
-  return Promise.resolve(category || null)
-}
-
-export function getPromptsByCategorySlug(slug) {
-  const category = categories.find((c) => c.slug === slug)
-  if (!category) return Promise.resolve([])
-
-  const result = prompts.filter(
-    (p) =>
-      getCategorySlug(p.category) === slug ||
-      p.tags.some((t) => getCategorySlug(t) === slug)
-  )
-  return Promise.resolve(result)
-}
-
-export function getRelatedPrompts(slug, count = 5) {
-  const current = prompts.find((p) => p.slug === slug)
-  const others = prompts.filter((p) => p.slug !== slug)
-
-  if (!current) {
-    return Promise.resolve(others.slice(0, count))
-  }
-
-  const scored = others.map((p) => {
-    const sharedTags = p.tags.filter((t) => current.tags.includes(t)).length
+  const scored = pool.map((p) => {
+    const sharedTags = (p.tags || []).filter((t) => (current.tags || []).includes(t)).length
     const sameCategory = p.category === current.category ? 2 : 0
     return { prompt: p, score: sharedTags + sameCategory }
   })
@@ -86,26 +119,26 @@ export function getRelatedPrompts(slug, count = 5) {
   const related = scored.slice(0, count).map((s) => s.prompt)
 
   if (related.length < count) {
-    const remaining = others.filter((p) => !related.includes(p))
+    const remaining = pool.filter((p) => !related.includes(p))
     related.push(...remaining.slice(0, count - related.length))
   }
 
-  return Promise.resolve(related)
+  return related
 }
 
-export function getPopularFilters() {
-  return Promise.resolve(popularFilters)
+export async function getPopularFilters() {
+  const cats = await loadCategories()
+  const preferred = ['Men', 'Woman', 'Couple', 'Family', 'Birthday']
+  const names = cats.map((c) => c.name)
+  const filters = preferred.filter((n) => names.includes(n))
+  return filters.length ? filters : names.slice(0, 5)
 }
 
-export function searchPrompts(query) {
-  if (!query.trim()) return Promise.resolve(prompts)
-  const q = query.toLowerCase()
-  const result = prompts.filter(
-    (p) =>
-      p.title.toLowerCase().includes(q) ||
-      p.excerpt.toLowerCase().includes(q) ||
-      p.tags.some((t) => t.toLowerCase().includes(q)) ||
-      p.category.toLowerCase().includes(q)
-  )
-  return Promise.resolve(result)
+export async function searchPrompts(query) {
+  if (!query.trim()) {
+    const { data } = await request('/api/prompts?sort=latest')
+    return data || []
+  }
+  const { data } = await request(`/api/prompts?q=${encodeURIComponent(query.trim())}&sort=latest`)
+  return data || []
 }
