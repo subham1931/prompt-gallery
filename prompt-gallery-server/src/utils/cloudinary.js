@@ -49,6 +49,11 @@ export async function uploadBuffer(buffer, filename, mimetype = 'image/jpeg') {
     return result
   } catch (err) {
     const msg = getErrorMessage(err, 'Cloudinary upload failed')
+    if (/missing permissions|actions=\["create"\]|unexpected status code - 403/i.test(msg)) {
+      throw new Error(
+        'Cloudinary API key cannot upload (missing create permission). In Cloudinary → Settings → API Keys, use a key with upload/create access (or create a new unrestricted key), update CLOUDINARY_* env vars on Render, and redeploy.',
+      )
+    }
     if (/Invalid api_key|Must supply api_key|unauthorized|401/i.test(msg)) {
       throw new Error(
         'Cloudinary rejected the API key. Check CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET, then restart the server.',
