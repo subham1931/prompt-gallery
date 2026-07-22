@@ -1,8 +1,12 @@
 import { Router } from 'express'
 import { Prompt } from '../models/Prompt.js'
-import { requireAuth } from '../middleware/auth.js'
+import { optionalAuth, requireAuth, requireStaff } from '../middleware/auth.js'
 
 const router = Router()
+
+function isStaff(user) {
+  return user && (user.role === 'admin' || user.role === 'superadmin')
+}
 
 function slugify(value) {
   return String(value || '')
@@ -56,7 +60,7 @@ function normalizeBody(body = {}) {
 }
 
 /** GET /api/prompts */
-router.get('/', async (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const {
       q,
@@ -68,6 +72,12 @@ router.get('/', async (req, res) => {
       limit,
       page = '1',
     } = req.query
+
+    const wantsNonPublic = status === 'all' || status === 'draft'
+    if (wantsNonPublic && !isStaff(req.user)) {
+      res.status(403).json({ error: 'Admin access required' })
+      return
+    }
 
     const filter = {}
 
@@ -128,7 +138,7 @@ router.get('/', async (req, res) => {
 })
 
 /** GET /api/prompts/by-id/:id — admin edit load */
-router.get('/by-id/:id', async (req, res) => {
+router.get('/by-id/:id', ...requireStaff, async (req, res) => {
   try {
     const doc = await Prompt.findById(req.params.id)
     if (!doc) {
@@ -179,16 +189,18 @@ router.post('/:id/like', requireAuth, async (req, res) => {
 })
 
 /** GET /api/prompts/:slug */
-router.get('/:slug', async (req, res) => {
+router.get('/:slug', optionalAuth, async (req, res) => {
   try {
     const doc = await Prompt.findOne({ slug: req.params.slug.toLowerCase() })
     if (!doc) {
       res.status(404).json({ error: 'Prompt not found' })
       return
     }
-    if (doc.status !== 'published' && req.query.includeDrafts !== '1') {
-      res.status(404).json({ error: 'Prompt not found' })
-      return
+    if (doc.status !== 'published') {
+      if (req.query.includeDrafts !== '1' || !isStaff(req.user)) {
+        res.status(404).json({ error: 'Prompt not found' })
+        return
+      }
     }
     res.json({ data: doc.toGalleryJSON() })
   } catch (err) {
@@ -198,7 +210,7 @@ router.get('/:slug', async (req, res) => {
 })
 
 /** POST /api/prompts */
-router.post('/', async (req, res) => {
+router.post('/', ...requireStaff, async (req, res) => {
   try {
     const payload = normalizeBody(req.body)
     if (!payload.title || !payload.promptText || !payload.category) {
@@ -221,7 +233,7 @@ router.post('/', async (req, res) => {
 })
 
 /** PUT /api/prompts/:id */
-router.put('/:id', async (req, res) => {
+router.put('/:id', ...requireStaff, async (req, res) => {
   try {
     const payload = normalizeBody(req.body)
     delete payload.likeCount
@@ -255,7 +267,7 @@ router.put('/:id', async (req, res) => {
 })
 
 /** DELETE /api/prompts/:id */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', ...requireStaff, async (req, res) => {
   try {
     const doc = await Prompt.findByIdAndDelete(req.params.id)
     if (!doc) {

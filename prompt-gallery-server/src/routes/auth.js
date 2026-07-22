@@ -48,6 +48,7 @@ router.post('/signup', async (req, res) => {
       name: parsed.name,
       email: parsed.email,
       passwordHash,
+      role: 'user',
     })
 
     const token = signToken(user)

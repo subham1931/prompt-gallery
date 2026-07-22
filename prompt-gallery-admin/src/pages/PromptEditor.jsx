@@ -417,7 +417,7 @@ export default function PromptEditor() {
         </div>
       )}
 
-      <div className="mx-auto max-w-[1180px] px-6 pt-6 pb-24">
+      <div className="mx-auto max-w-[1180px] px-4 pt-5 pb-28 sm:px-6 sm:pt-6 md:pb-24 md:pl-20">
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
           <div className="flex min-w-0 flex-col gap-3">
             <p className="m-0 px-0.5 text-[11px] font-semibold tracking-[0.06em] text-mute-light uppercase">

@@ -1,4 +1,26 @@
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/$/, '')
+const TOKEN_KEY = 'pg_admin_auth_token'
+
+export function getApiUrl() {
+  return API_URL
+}
+
+export function getStoredToken() {
+  try {
+    return localStorage.getItem(TOKEN_KEY) || ''
+  } catch {
+    return ''
+  }
+}
+
+export function setStoredToken(token) {
+  try {
+    if (token) localStorage.setItem(TOKEN_KEY, token)
+    else localStorage.removeItem(TOKEN_KEY)
+  } catch {
+    /* ignore */
+  }
+}
 
 function toErrorMessage(payload, status) {
   const err = payload?.error ?? payload?.message
@@ -15,12 +37,17 @@ function toErrorMessage(payload, status) {
 }
 
 async function request(path, options = {}) {
+  const headers = {
+    ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
+    ...options.headers,
+  }
+
+  const token = options.token ?? getStoredToken()
+  if (token) headers.Authorization = `Bearer ${token}`
+
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
-    headers: {
-      ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
-      ...options.headers,
-    },
+    headers,
   })
 
   const payload = await res.json().catch(() => ({}))
@@ -30,8 +57,33 @@ async function request(path, options = {}) {
   return payload
 }
 
-export function getApiUrl() {
-  return API_URL
+export async function login({ email, password }) {
+  const { data } = await request('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+    token: '',
+  })
+  return data
+}
+
+export async function getMe(token) {
+  const { data } = await request('/api/auth/me', { token })
+  return data.user
+}
+
+export function listAdmins() {
+  return request('/api/admins')
+}
+
+export function createAdmin(body) {
+  return request('/api/admins', { method: 'POST', body: JSON.stringify(body) })
+}
+
+export function demoteAdmin(id) {
+  return request(`/api/admins/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ role: 'user' }),
+  })
 }
 
 export function listPrompts(params = {}) {

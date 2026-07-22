@@ -12,7 +12,12 @@ export function getJwtSecret() {
 
 export function signToken(user) {
   return jwt.sign(
-    { sub: String(user._id), email: user.email, name: user.name },
+    {
+      sub: String(user._id),
+      email: user.email,
+      name: user.name,
+      role: user.role || 'user',
+    },
     getJwtSecret(),
     { expiresIn: process.env.JWT_EXPIRES_IN || DEFAULT_EXPIRES },
   )

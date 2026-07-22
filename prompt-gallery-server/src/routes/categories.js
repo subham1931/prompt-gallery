@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { Category } from '../models/Category.js'
 import { Prompt } from '../models/Prompt.js'
+import { requireStaff } from '../middleware/auth.js'
 
 const router = Router()
 
@@ -71,8 +72,8 @@ router.get('/:slug', async (req, res) => {
   }
 })
 
-/** POST /api/categories — create (admin, no auth MVP) */
-router.post('/', async (req, res) => {
+/** POST /api/categories — create (admin+) */
+router.post('/', ...requireStaff, async (req, res) => {
   try {
     const name = String(req.body.name || '').trim()
     if (!name) {

@@ -139,7 +139,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-bg text-ink">
       <AdminHeader />
 
-      <div className="mx-auto max-w-[1180px] px-6 pt-[26px] pb-20">
+      <div className="mx-auto max-w-[1180px] px-4 pt-5 pb-28 sm:px-6 sm:pt-[26px] md:pb-20 md:pl-20">
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="m-0 text-xl font-bold tracking-[-0.02em]">Prompts</h1>
@@ -147,7 +147,7 @@ export default function Dashboard() {
               Create and optimize prompts for the public gallery.
             </p>
           </div>
-          <div className="flex max-w-md flex-1 items-center gap-2">
+          <div className="flex w-full items-center gap-2 sm:max-w-md sm:flex-1">
             <div className="relative min-w-0 flex-1">
               <Search
                 size={15}
@@ -227,13 +227,13 @@ export default function Dashboard() {
           </div>
 
           {loading && (
-            <div className="px-5 py-10 text-center text-[13px] text-mute">Loading…</div>
+            <div className="px-4 py-10 text-center text-[13px] text-mute sm:px-5">Loading…</div>
           )}
           {!loading && error && (
-            <div className="px-5 py-10 text-center text-[13px] text-red">{error}</div>
+            <div className="px-4 py-10 text-center text-[13px] text-red sm:px-5">{error}</div>
           )}
           {!loading && !error && filtered.length === 0 && (
-            <div className="px-5 py-10 text-center text-[13px] text-mute">
+            <div className="px-4 py-10 text-center text-[13px] text-mute sm:px-5">
               No prompts yet.{' '}
               <Link to="/prompts/new" className="font-semibold text-orange-dark">
                 Create one
@@ -265,9 +265,9 @@ export default function Dashboard() {
               return (
                 <div
                   key={row.id}
-                  className="grid grid-cols-[56px_1fr] items-center gap-3 border-b border-border px-5 py-3.5 last:border-b-0 md:grid-cols-[72px_1fr_100px_90px_80px_70px_120px] md:gap-3"
+                  className="grid grid-cols-[52px_1fr] items-center gap-3 border-b border-border px-3 py-3.5 last:border-b-0 sm:px-5 md:grid-cols-[72px_1fr_100px_90px_80px_70px_120px] md:gap-3"
                 >
-                  <div className="h-14 w-14 overflow-hidden rounded-lg border border-border bg-surface-subtle md:h-[52px] md:w-[52px]">
+                  <div className="h-12 w-12 overflow-hidden rounded-lg border border-border bg-surface-subtle sm:h-14 sm:w-14 md:h-[52px] md:w-[52px]">
                     {thumb ? (
                       <img
                         src={thumb}

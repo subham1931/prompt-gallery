@@ -74,7 +74,7 @@ export function CategoriesSection({ onToast }) {
 
   return (
     <section className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_1px_2px_rgba(16,24,40,0.03),0_1px_12px_rgba(16,24,40,0.04)]">
-      <div className="flex items-center justify-between border-b border-border px-5 py-3">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-5">
         <div className="flex items-center gap-2 text-[12px] font-semibold tracking-[0.04em] text-mute-light uppercase">
           <FolderPlus size={14} className="text-orange-dark" />
           Manage
@@ -82,7 +82,7 @@ export function CategoriesSection({ onToast }) {
         <Badge tone="default">{categories.length} total</Badge>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 p-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+      <div className="grid grid-cols-1 gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-surface-muted p-4">
           <div className="mb-3 text-[12px] font-semibold tracking-[0.04em] text-mute-light uppercase">
             Add category

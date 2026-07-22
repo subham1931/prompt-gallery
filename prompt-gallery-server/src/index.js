@@ -9,6 +9,7 @@ import { createCorsMiddleware } from './middleware/cors.js'
 import { configureCloudinary } from './utils/cloudinary.js'
 import { UPLOADS_DIR } from './utils/localUpload.js'
 import authRouter from './routes/auth.js'
+import adminsRouter from './routes/admins.js'
 import promptsRouter from './routes/prompts.js'
 import categoriesRouter from './routes/categories.js'
 import uploadRouter from './routes/upload.js'
@@ -31,6 +32,7 @@ app.get('/api/health', (_req, res) => {
 })
 
 app.use('/api/auth', authRouter)
+app.use('/api/admins', adminsRouter)
 app.use('/api/prompts', promptsRouter)
 app.use('/api/categories', categoriesRouter)
 app.use('/api/upload', uploadRouter)

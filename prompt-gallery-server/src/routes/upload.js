@@ -3,6 +3,7 @@ import { upload } from '../middleware/upload.js'
 import { uploadBuffer } from '../utils/cloudinary.js'
 import { getErrorMessage } from '../utils/errors.js'
 import { isNetworkUploadError, saveLocalUpload } from '../utils/localUpload.js'
+import { requireStaff } from '../middleware/auth.js'
 
 const router = Router()
 
@@ -14,8 +15,8 @@ function allowLocalFallback() {
   return process.env.NODE_ENV !== 'production'
 }
 
-/** POST /api/upload — multipart field "image" */
-router.post('/', (req, res) => {
+/** POST /api/upload — multipart field "image" (admin+) */
+router.post('/', ...requireStaff, (req, res) => {
   upload.single('image')(req, res, async (multerErr) => {
     try {
       if (multerErr) {

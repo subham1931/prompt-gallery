@@ -1,6 +1,8 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
 
+export const USER_ROLES = ['user', 'admin', 'superadmin']
+
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true, maxlength: 80 },
@@ -13,6 +15,12 @@ const userSchema = new mongoose.Schema(
       maxlength: 160,
     },
     passwordHash: { type: String, required: true, select: false },
+    role: {
+      type: String,
+      enum: USER_ROLES,
+      default: 'user',
+      index: true,
+    },
     likedPromptIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Prompt' }],
   },
   { timestamps: true },
@@ -31,9 +39,14 @@ userSchema.methods.toPublicJSON = function toPublicJSON() {
     id: String(this._id),
     name: this.name,
     email: this.email,
+    role: this.role || 'user',
     likedPromptIds: (this.likedPromptIds || []).map(String),
     createdAt: this.createdAt,
   }
+}
+
+userSchema.methods.isStaff = function isStaff() {
+  return this.role === 'admin' || this.role === 'superadmin'
 }
 
 export const User = mongoose.model('User', userSchema)

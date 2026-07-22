@@ -49,3 +49,21 @@ export async function optionalAuth(req, _res, next) {
     next(err)
   }
 }
+
+export function requireRole(...roles) {
+  const allowed = roles.flat()
+  return (req, res, next) => {
+    if (!req.user) {
+      res.status(401).json({ error: 'Sign in required' })
+      return
+    }
+    if (!allowed.includes(req.user.role)) {
+      res.status(403).json({ error: 'You do not have permission for this action' })
+      return
+    }
+    next()
+  }
+}
+
+export const requireStaff = [requireAuth, requireRole('admin', 'superadmin')]
+export const requireSuperadmin = [requireAuth, requireRole('superadmin')]
