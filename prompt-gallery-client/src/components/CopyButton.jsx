@@ -1,18 +1,22 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Copy, Check } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
 export default function CopyButton({ text, className = '' }) {
+  const { requireAuth } = useAuth()
   const [copied, setCopied] = useState(false)
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    } catch {
-      setCopied(false)
-    }
+  const handleCopy = () => {
+    requireAuth(async () => {
+      try {
+        await navigator.clipboard.writeText(text)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1500)
+      } catch {
+        setCopied(false)
+      }
+    })
   }
 
   return (

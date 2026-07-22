@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { Prompt } from '../models/Prompt.js'
+import { requireAuth } from '../middleware/auth.js'
 
 const router = Router()
 
@@ -138,6 +139,42 @@ router.get('/by-id/:id', async (req, res) => {
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Failed to fetch prompt' })
+  }
+})
+
+/** POST /api/prompts/:id/like — toggle like (auth required) */
+router.post('/:id/like', requireAuth, async (req, res) => {
+  try {
+    const prompt = await Prompt.findById(req.params.id)
+    if (!prompt) {
+      res.status(404).json({ error: 'Prompt not found' })
+      return
+    }
+
+    const promptId = String(prompt._id)
+    const likedIds = (req.user.likedPromptIds || []).map(String)
+    const alreadyLiked = likedIds.includes(promptId)
+
+    if (alreadyLiked) {
+      req.user.likedPromptIds = req.user.likedPromptIds.filter((id) => String(id) !== promptId)
+      prompt.likeCount = Math.max(0, (prompt.likeCount || 0) - 1)
+    } else {
+      req.user.likedPromptIds.push(prompt._id)
+      prompt.likeCount = (prompt.likeCount || 0) + 1
+    }
+
+    await Promise.all([req.user.save(), prompt.save()])
+
+    res.json({
+      data: {
+        liked: !alreadyLiked,
+        likeCount: prompt.likeCount,
+        user: req.user.toPublicJSON(),
+      },
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err.message || 'Failed to update like' })
   }
 })
 

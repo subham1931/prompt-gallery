@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Heart } from 'lucide-react'
-import { getPromptBySlug, getRelatedPrompts, getCategorySlug } from '../api'
+import { Heart, Share2, Check } from 'lucide-react'
+import { getPromptBySlug, getRelatedPrompts, getCategorySlug, togglePromptLike } from '../api'
+import { useAuth } from '../context/AuthContext'
 import Breadcrumb from '../components/Breadcrumb'
 import CopyButton from '../components/CopyButton'
 import PromptCard from '../components/PromptCard'
@@ -11,20 +12,51 @@ import PageTransition from '../components/PageTransition'
 
 export default function PromptDetail() {
   const { slug } = useParams()
+  const { user, requireAuth, updateUser } = useAuth()
   const [prompt, setPrompt] = useState(null)
   const [related, setRelated] = useState([])
   const [likes, setLikes] = useState(0)
   const [liked, setLiked] = useState(false)
+  const [shared, setShared] = useState(false)
+  const [liking, setLiking] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getPromptBySlug(slug).then((data) => {
+    let cancelled = false
+    setLoading(true)
+    Promise.all([getPromptBySlug(slug), getRelatedPrompts(slug, 6)]).then(([data, relatedPrompts]) => {
+      if (cancelled) return
       if (data) {
         setPrompt(data)
         setLikes(data.likeCount)
+      } else {
+        setPrompt(null)
       }
+      setRelated(relatedPrompts)
+      setLoading(false)
     })
-    getRelatedPrompts(slug, 6).then(setRelated)
+    return () => {
+      cancelled = true
+    }
   }, [slug])
+
+  useEffect(() => {
+    if (!prompt?.id || !user) {
+      setLiked(false)
+      return
+    }
+    setLiked(Boolean(user.likedPromptIds?.includes(String(prompt.id))))
+  }, [prompt?.id, user])
+
+  if (loading) {
+    return (
+      <PageTransition>
+        <div className="mx-auto max-w-7xl px-4 py-24 text-center text-[var(--color-text-muted)]">
+          Loading…
+        </div>
+      </PageTransition>
+    )
+  }
 
   if (!prompt) {
     return (
@@ -47,10 +79,37 @@ export default function PromptDetail() {
   })
 
   const handleLike = () => {
-    if (!liked) {
-      setLikes((l) => l + 1)
-      setLiked(true)
-    }
+    requireAuth(async () => {
+      if (!prompt.id || liking) return
+      setLiking(true)
+      try {
+        const data = await togglePromptLike(prompt.id)
+        setLiked(data.liked)
+        setLikes(data.likeCount)
+        if (data.user) updateUser(data.user)
+      } catch {
+        /* keep prior UI */
+      } finally {
+        setLiking(false)
+      }
+    })
+  }
+
+  const handleShare = () => {
+    requireAuth(async () => {
+      const url = `${window.location.origin}/prompt/${prompt.slug}`
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: prompt.title, text: prompt.excerpt, url })
+        } else {
+          await navigator.clipboard.writeText(url)
+          setShared(true)
+          setTimeout(() => setShared(false), 1500)
+        }
+      } catch {
+        /* cancelled */
+      }
+    })
   }
 
   return (
@@ -113,7 +172,7 @@ export default function PromptDetail() {
               </div>
             </div>
 
-            <div className="mt-6 flex items-center gap-4">
+            <div className="mt-6 flex items-center gap-3">
               <motion.button
                 type="button"
                 onClick={handleLike}
@@ -126,6 +185,15 @@ export default function PromptDetail() {
               >
                 <Heart size={16} className={liked ? 'fill-current' : ''} />
                 {likes.toLocaleString()}
+              </motion.button>
+              <motion.button
+                type="button"
+                onClick={handleShare}
+                whileTap={{ scale: 0.96 }}
+                className="inline-flex items-center gap-2 rounded-xl border border-[var(--color-border)] px-4 py-2 text-sm font-medium text-[var(--color-text)] transition-all duration-200 hover:border-accent/30 hover:text-accent"
+              >
+                {shared ? <Check size={16} /> : <Share2 size={16} />}
+                {shared ? 'Copied link' : 'Share'}
               </motion.button>
             </div>
 

@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Heart, Copy, Check, Share2 } from 'lucide-react'
+import { togglePromptLike } from '../api'
+import { useAuth } from '../context/AuthContext'
 
 const aspectClasses = {
   square: 'aspect-[4/5] sm:aspect-square',
@@ -10,6 +12,7 @@ const aspectClasses = {
 }
 
 export default function PromptCard({
+  id,
   image,
   title,
   category,
@@ -20,50 +23,74 @@ export default function PromptCard({
   aspect = 'portrait',
   index = 0,
 }) {
+  const { user, requireAuth, updateUser } = useAuth()
   const ratioClass = aspectClasses[aspect] || aspectClasses.portrait
   const [likes, setLikes] = useState(likeCount)
   const [liked, setLiked] = useState(false)
   const [copied, setCopied] = useState(false)
   const [shared, setShared] = useState(false)
+  const [liking, setLiking] = useState(false)
 
   const copyText = promptText || excerpt || ''
+
+  useEffect(() => {
+    setLikes(likeCount)
+  }, [likeCount])
+
+  useEffect(() => {
+    setLiked(Boolean(id && user?.likedPromptIds?.includes(String(id))))
+  }, [id, user])
 
   const handleLike = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    if (!liked) {
-      setLikes((l) => l + 1)
-      setLiked(true)
-    }
-  }
-
-  const handleCopy = async (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    try {
-      await navigator.clipboard.writeText(copyText)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    } catch {
-      setCopied(false)
-    }
-  }
-
-  const handleShare = async (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    const url = `${window.location.origin}/prompt/${slug}`
-    try {
-      if (navigator.share) {
-        await navigator.share({ title, text: excerpt, url })
-      } else {
-        await navigator.clipboard.writeText(url)
-        setShared(true)
-        setTimeout(() => setShared(false), 1500)
+    requireAuth(async () => {
+      if (!id || liking) return
+      setLiking(true)
+      try {
+        const data = await togglePromptLike(id)
+        setLiked(data.liked)
+        setLikes(data.likeCount)
+        if (data.user) updateUser(data.user)
+      } catch {
+        /* keep prior UI */
+      } finally {
+        setLiking(false)
       }
-    } catch {
-      /* user cancelled share */
-    }
+    })
+  }
+
+  const handleCopy = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    requireAuth(async () => {
+      try {
+        await navigator.clipboard.writeText(copyText)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1500)
+      } catch {
+        setCopied(false)
+      }
+    })
+  }
+
+  const handleShare = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    requireAuth(async () => {
+      const url = `${window.location.origin}/prompt/${slug}`
+      try {
+        if (navigator.share) {
+          await navigator.share({ title, text: excerpt, url })
+        } else {
+          await navigator.clipboard.writeText(url)
+          setShared(true)
+          setTimeout(() => setShared(false), 1500)
+        }
+      } catch {
+        /* user cancelled share */
+      }
+    })
   }
 
   return (
@@ -88,12 +115,10 @@ export default function PromptCard({
             aria-label={`View ${title}`}
           />
 
-          {/* Category badge */}
           <span className="pointer-events-none absolute left-2 top-2 z-[2] max-w-[calc(100%-3.5rem)] truncate rounded-md bg-black px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white shadow-md sm:left-3 sm:top-3 sm:max-w-[calc(100%-4rem)] sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-wider">
             {category}
           </span>
 
-          {/* Share button — top-right */}
           <motion.button
             type="button"
             onClick={handleShare}
@@ -104,7 +129,6 @@ export default function PromptCard({
             {shared ? <Check size={13} /> : <Share2 size={13} />}
           </motion.button>
 
-          {/* Bottom caption */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-black/95 via-black/80 to-transparent px-2.5 pb-2.5 pt-10 sm:px-3 sm:pb-3 sm:pt-16">
             <h3 className="font-display line-clamp-1 text-sm font-bold leading-snug text-white sm:text-base">
               {title}
