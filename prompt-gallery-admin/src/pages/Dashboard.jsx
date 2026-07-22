@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Heart, ImageIcon, Search, Trash2 } from 'lucide-react'
+import { Check, Filter, Heart, ImageIcon, Search, Trash2 } from 'lucide-react'
 import { AdminHeader } from '../components/AdminHeader'
 import { Badge } from '../components/ui/Badge'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
@@ -9,7 +9,7 @@ import { useToast } from '../hooks/useToast'
 import { deletePrompt, listPrompts } from '../api/client'
 import { computeSeoScore } from '../utils/seo'
 
-const SORT_TABS = [
+const FILTER_OPTIONS = [
   { id: 'latest', label: 'Latest' },
   { id: 'trending', label: 'Trending' },
   { id: 'popular', label: 'Popular' },
@@ -21,21 +21,40 @@ function formatLikes(n) {
   return String(value)
 }
 
+function matchesFilter(row, id) {
+  if (id === 'trending') return Boolean(row.trending)
+  if (id === 'popular') return Number(row.likeCount) > 0
+  if (id === 'latest') return true
+  return false
+}
+
+function sortRows(rows, selectedFilters) {
+  const list = [...rows]
+  if (selectedFilters.includes('popular')) {
+    list.sort((a, b) => (Number(b.likeCount) || 0) - (Number(a.likeCount) || 0))
+  } else if (selectedFilters.includes('trending')) {
+    list.sort((a, b) => Number(Boolean(b.trending)) - Number(Boolean(a.trending)))
+  }
+  return list
+}
+
 export default function Dashboard() {
   const { toasts, pushToast } = useToast()
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
-  const [sort, setSort] = useState('latest')
+  const [selectedFilters, setSelectedFilters] = useState([])
+  const [filterOpen, setFilterOpen] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const [pendingDelete, setPendingDelete] = useState(null)
+  const filterRef = useRef(null)
 
   useEffect(() => {
     let cancelled = false
     setLoading(true)
     setError('')
-    listPrompts({ status: 'all', sort })
+    listPrompts({ status: 'all', sort: 'latest' })
       .then(({ data }) => {
         if (!cancelled) setRows(data || [])
       })
@@ -48,18 +67,48 @@ export default function Dashboard() {
     return () => {
       cancelled = true
     }
-  }, [sort])
+  }, [])
+
+  useEffect(() => {
+    if (!filterOpen) return
+    const onPointerDown = (e) => {
+      if (!filterRef.current?.contains(e.target)) setFilterOpen(false)
+    }
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setFilterOpen(false)
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [filterOpen])
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    if (!q) return rows
-    return rows.filter(
+    let list = rows
+
+    if (selectedFilters.length > 0) {
+      list = list.filter((row) => selectedFilters.some((id) => matchesFilter(row, id)))
+    }
+
+    list = sortRows(list, selectedFilters)
+
+    if (!q) return list
+    return list.filter(
       (r) =>
         r.title.toLowerCase().includes(q) ||
         r.slug.toLowerCase().includes(q) ||
         (r.tool || '').toLowerCase().includes(q),
     )
-  }, [rows, query])
+  }, [rows, query, selectedFilters])
+
+  const toggleFilter = (id) => {
+    setSelectedFilters((prev) =>
+      prev.includes(id) ? prev.filter((value) => value !== id) : [...prev, id],
+    )
+  }
 
   const askDelete = (row) => setPendingDelete(row)
 
@@ -84,20 +133,22 @@ export default function Dashboard() {
     }
   }
 
+  const filtersActive = selectedFilters.length > 0
+
   return (
     <div className="min-h-screen bg-bg text-ink">
       <AdminHeader />
 
       <div className="mx-auto max-w-[1180px] px-6 pt-[26px] pb-20">
-        <div className="mb-5 flex flex-col gap-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="m-0 text-xl font-bold tracking-[-0.02em]">Prompts</h1>
-              <p className="mt-1 mb-0 text-[13px] text-mute">
-                Create and optimize prompts for the public gallery.
-              </p>
-            </div>
-            <div className="relative max-w-sm flex-1">
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="m-0 text-xl font-bold tracking-[-0.02em]">Prompts</h1>
+            <p className="mt-1 mb-0 text-[13px] text-mute">
+              Create and optimize prompts for the public gallery.
+            </p>
+          </div>
+          <div className="flex max-w-md flex-1 items-center gap-2">
+            <div className="relative min-w-0 flex-1">
               <Search
                 size={15}
                 className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-mute-light"
@@ -110,26 +161,57 @@ export default function Dashboard() {
                 className="w-full rounded-[10px] border border-border bg-surface py-2.5 pr-3 pl-9 text-[13.5px] text-ink outline-none focus:border-orange focus:shadow-[0_0_0_3px_var(--color-orange-tint)]"
               />
             </div>
-          </div>
 
-          <div className="flex flex-wrap gap-2">
-            {SORT_TABS.map((tab) => {
-              const active = sort === tab.id
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setSort(tab.id)}
-                  className={`cursor-pointer rounded-lg border px-3.5 py-2 text-[13px] font-semibold transition-colors ${
-                    active
-                      ? 'border-orange bg-orange-tint text-orange-dark'
-                      : 'border-border bg-surface text-mute hover:border-orange/40 hover:text-ink'
-                  }`}
+            <div className="relative shrink-0" ref={filterRef}>
+              <button
+                type="button"
+                onClick={() => setFilterOpen((open) => !open)}
+                aria-label="Filter prompts"
+                aria-expanded={filterOpen}
+                aria-haspopup="listbox"
+                className={`inline-flex size-[42px] cursor-pointer items-center justify-center rounded-[10px] border transition-colors ${
+                  filterOpen || filtersActive
+                    ? 'border-orange bg-orange-tint text-orange-dark'
+                    : 'border-border bg-surface text-mute hover:border-orange/40 hover:text-ink'
+                }`}
+              >
+                <Filter size={15} strokeWidth={2.25} />
+              </button>
+
+              {filterOpen && (
+                <div
+                  role="listbox"
+                  aria-label="Filter prompts"
+                  aria-multiselectable="true"
+                  className="absolute top-[calc(100%+6px)] right-0 z-20 min-w-[168px] overflow-hidden rounded-xl border border-border bg-surface py-1 shadow-[0_8px_24px_rgba(16,24,40,0.12)]"
                 >
-                  {tab.label}
-                </button>
-              )
-            })}
+                  {FILTER_OPTIONS.map((option) => {
+                    const checked = selectedFilters.includes(option.id)
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        role="option"
+                        aria-selected={checked}
+                        onClick={() => toggleFilter(option.id)}
+                        className="flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2.5 text-left text-[13px] font-semibold text-mute transition-colors hover:bg-surface-muted hover:text-ink"
+                      >
+                        <span
+                          className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-md ${
+                            checked
+                              ? 'border-none bg-orange'
+                              : 'border-[1.5px] border-border bg-surface'
+                          }`}
+                        >
+                          {checked && <Check size={12} color="#fff" strokeWidth={3} />}
+                        </span>
+                        {option.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
