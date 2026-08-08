@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Filter, Heart, ImageIcon, Search, Trash2 } from 'lucide-react'
+import { Check, Filter, Heart, ImageIcon, Plus, Search, Trash2 } from 'lucide-react'
 import { AdminHeader } from '../components/AdminHeader'
 import { Badge } from '../components/ui/Badge'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
@@ -140,14 +140,24 @@ export default function Dashboard() {
       <AdminHeader />
 
       <div className="mx-auto max-w-[1180px] px-4 pt-5 pb-28 sm:px-6 sm:pt-[26px] md:pb-20 md:pl-20">
-        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        {/* Top Header & Action Row */}
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="m-0 text-xl font-bold tracking-[-0.02em]">Prompts</h1>
-            <p className="mt-1 mb-0 text-[13px] text-mute">
+            <h1 className="m-0 text-2xl font-extrabold tracking-tight">Prompts</h1>
+            <p className="mt-1 text-xs text-mute">
               Create and optimize prompts for the public gallery.
             </p>
           </div>
-          <div className="flex w-full items-center gap-2 sm:max-w-md sm:flex-1">
+
+          <Link
+            to="/prompts/new"
+            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-orange px-4 py-2.5 text-xs font-bold text-white no-underline shadow-[0_3px_12px_rgba(255,122,0,0.35)] transition-all hover:bg-orange-dark hover:shadow-[0_4px_16px_rgba(255,122,0,0.45)] active:scale-[0.98]"
+          >
+            <Plus size={16} />
+            <span>Create New Prompt</span>
+          </Link>
+        </div>
+          <div className="mb-5 flex w-full items-center gap-2 sm:max-w-md">
             <div className="relative min-w-0 flex-1">
               <Search
                 size={15}
@@ -213,7 +223,6 @@ export default function Dashboard() {
               )}
             </div>
           </div>
-        </div>
 
         <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_1px_2px_rgba(16,24,40,0.03),0_1px_12px_rgba(16,24,40,0.04)]">
           <div className="hidden grid-cols-[72px_1fr_100px_90px_80px_70px_120px] gap-3 border-b border-border bg-surface-muted px-5 py-3 text-[11.5px] font-bold tracking-[0.04em] text-mute-light uppercase md:grid">
@@ -350,23 +359,22 @@ export default function Dashboard() {
                 </div>
               )
             })}
+          <ConfirmModal
+            open={Boolean(pendingDelete)}
+            title="Delete this prompt?"
+            description={
+              pendingDelete
+                ? `“${pendingDelete.title}” will be permanently removed from the gallery. This cannot be undone.`
+                : ''
+            }
+            confirmLabel="Delete prompt"
+            cancelLabel="Keep it"
+            loading={Boolean(deletingId)}
+            onCancel={closeDeleteModal}
+            onConfirm={confirmDelete}
+          />
         </div>
       </div>
-
-      <ConfirmModal
-        open={Boolean(pendingDelete)}
-        title="Delete this prompt?"
-        description={
-          pendingDelete
-            ? `“${pendingDelete.title}” will be permanently removed from the gallery. This cannot be undone.`
-            : ''
-        }
-        confirmLabel="Delete prompt"
-        cancelLabel="Keep it"
-        loading={Boolean(deletingId)}
-        onCancel={closeDeleteModal}
-        onConfirm={confirmDelete}
-      />
 
       <Toast toasts={toasts} />
     </div>

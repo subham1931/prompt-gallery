@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { LayoutDashboard, LogOut, Plus, User } from 'lucide-react'
+import { LayoutDashboard, LogOut, User } from 'lucide-react'
 import { ThemeToggle } from './ThemeToggle'
 import { AdminSidebar } from './AdminSidebar'
 import { useAuth } from '../context/AuthContext'
 
-export function AdminHeader({ showNewPrompt = true }) {
+export function AdminHeader() {
   const { user, signOut } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
@@ -74,16 +74,6 @@ export function AdminHeader({ showNewPrompt = true }) {
 
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <ThemeToggle />
-            {showNewPrompt && (
-              <Link
-                to="/prompts/new"
-                aria-label="New prompt"
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-orange px-2.5 text-[13px] font-bold leading-none text-white no-underline shadow-[0_2px_8px_rgba(255,122,0,0.35)] sm:px-3.5"
-              >
-                <Plus size={15} />
-                <span className="hidden sm:inline">New prompt</span>
-              </Link>
-            )}
 
             {user && (
               <div
