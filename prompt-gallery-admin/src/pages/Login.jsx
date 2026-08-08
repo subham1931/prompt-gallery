@@ -16,7 +16,7 @@ import { useAuth } from '../context/AuthContext'
 import { ThemeToggle } from '../components/ThemeToggle'
 
 export default function Login() {
-  const { signIn, isStaff, booting } = useAuth()
+  const { signIn, isStaff, isSuperadmin, booting } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -27,11 +27,13 @@ export default function Login() {
   const [showForgotModal, setShowForgotModal] = useState(false)
 
   useEffect(() => {
-    if (!booting && isStaff) navigate('/', { replace: true })
-  }, [booting, isStaff, navigate])
+    if (!booting && isStaff) {
+      navigate(isSuperadmin ? '/admins' : '/', { replace: true })
+    }
+  }, [booting, isStaff, isSuperadmin, navigate])
 
   if (!booting && isStaff) {
-    return <Navigate to="/" replace />
+    return <Navigate to={isSuperadmin ? '/admins' : '/'} replace />
   }
 
   const handleSubmit = async (e) => {
@@ -39,8 +41,9 @@ export default function Login() {
     setError('')
     setSubmitting(true)
     try {
-      await signIn({ email, password })
-      navigate('/', { replace: true })
+      const user = await signIn({ email, password })
+      const targetPath = user?.role === 'superadmin' ? '/admins' : '/'
+      navigate(targetPath, { replace: true })
     } catch (err) {
       setError(err.message || 'Sign in failed. Please check your credentials.')
     } finally {
