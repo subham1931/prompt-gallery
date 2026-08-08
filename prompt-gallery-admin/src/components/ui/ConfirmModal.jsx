@@ -5,9 +5,11 @@ export function ConfirmModal({
   open,
   title = 'Are you sure?',
   description,
+  children,
   confirmLabel = 'Delete',
   cancelLabel = 'Cancel',
   loading = false,
+  loadingText,
   onConfirm,
   onCancel,
   tone = 'danger',
@@ -69,7 +71,7 @@ export function ConfirmModal({
           >
             <AlertTriangle size={18} />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h2
               id="confirm-modal-title"
               className="m-0 text-[15px] font-semibold tracking-[-0.01em] text-ink"
@@ -84,6 +86,7 @@ export function ConfirmModal({
                 {description}
               </p>
             )}
+            {children}
           </div>
         </div>
 
@@ -103,7 +106,7 @@ export function ConfirmModal({
             className={`inline-flex cursor-pointer items-center gap-1.5 rounded-lg border-none px-3.5 py-2 text-[13px] font-semibold text-white transition-opacity disabled:cursor-wait disabled:opacity-70 ${confirmCls}`}
           >
             {loading ? <Loader2 size={14} className="animate-spin-slow" /> : null}
-            {loading ? 'Deleting…' : confirmLabel}
+            {loading ? loadingText || 'Processing…' : confirmLabel}
           </button>
         </div>
       </div>

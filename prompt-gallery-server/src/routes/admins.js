@@ -80,41 +80,79 @@ router.post('/', ...requireSuperadmin, async (req, res) => {
   }
 })
 
-/** PATCH /api/admins/:id — demote admin → user (cannot target self or superadmin) */
+async function verifySuperadminPassword(req) {
+  const password = String(req.body?.superadminPassword || req.body?.password || '').trim()
+  if (!password) {
+    const err = new Error('Superadmin password is required')
+    err.status = 400
+    throw err
+  }
+  const currentSuperUser = await User.findById(req.user._id).select('+passwordHash')
+  if (!currentSuperUser || !(await currentSuperUser.verifyPassword(password))) {
+    const err = new Error('Incorrect superadmin password')
+    err.status = 401
+    throw err
+  }
+}
+
+/** PATCH /api/admins/:id — update status (isActive) or demote (role: user) */
 router.patch('/:id', ...requireSuperadmin, async (req, res) => {
   try {
     const target = await User.findById(req.params.id)
     if (!target) {
-      res.status(404).json({ error: 'Admin not found' })
+      res.status(404).json({ error: 'Admin account not found' })
       return
     }
 
     if (String(target._id) === String(req.user._id)) {
-      res.status(400).json({ error: 'You cannot change your own role' })
+      res.status(400).json({ error: 'You cannot modify your own account status or role' })
       return
     }
 
-    if (target.role === 'superadmin') {
-      res.status(403).json({ error: 'Cannot modify a superadmin account' })
-      return
+    await verifySuperadminPassword(req)
+
+    if (typeof req.body?.isActive === 'boolean') {
+      target.isActive = req.body.isActive
     }
 
-    if (target.role !== 'admin') {
-      res.status(400).json({ error: 'Only admin accounts can be demoted here' })
-      return
+    if (req.body?.role) {
+      const nextRole = String(req.body.role).toLowerCase()
+      if (nextRole !== 'user') {
+        res.status(400).json({ error: 'Only demotion to user is allowed' })
+        return
+      }
+      target.role = 'user'
     }
 
-    const nextRole = String(req.body?.role || 'user').toLowerCase()
-    if (nextRole !== 'user') {
-      res.status(400).json({ error: 'Only demotion to user is allowed' })
-      return
-    }
-
-    target.role = 'user'
     await target.save()
     res.json({ data: target.toPublicJSON() })
   } catch (err) {
-    res.status(500).json({ error: getErrorMessage(err, 'Failed to update admin') })
+    const status = err.status || 500
+    res.status(status).json({ error: getErrorMessage(err, 'Failed to update admin account') })
+  }
+})
+
+/** DELETE /api/admins/:id — delete admin account permanently */
+router.delete('/:id', ...requireSuperadmin, async (req, res) => {
+  try {
+    const target = await User.findById(req.params.id)
+    if (!target) {
+      res.status(404).json({ error: 'Admin account not found' })
+      return
+    }
+
+    if (String(target._id) === String(req.user._id)) {
+      res.status(400).json({ error: 'You cannot delete your own account' })
+      return
+    }
+
+    await verifySuperadminPassword(req)
+
+    await User.findByIdAndDelete(req.params.id)
+    res.json({ ok: true, id: req.params.id, message: 'Admin account deleted' })
+  } catch (err) {
+    const status = err.status || 500
+    res.status(status).json({ error: getErrorMessage(err, 'Failed to delete admin account') })
   }
 })
 

@@ -72,6 +72,11 @@ router.post('/login', async (req, res) => {
       return
     }
 
+    if (user.isActive === false) {
+      res.status(403).json({ error: 'Your account has been deactivated. Please contact a superadmin.' })
+      return
+    }
+
     const token = signToken(user)
     res.json({ data: { user: user.toPublicJSON(), token } })
   } catch (err) {

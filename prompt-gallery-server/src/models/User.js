@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema(
       default: 'user',
       index: true,
     },
+    isActive: { type: Boolean, default: true, index: true },
     likedPromptIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Prompt' }],
   },
   { timestamps: true },
@@ -40,6 +41,7 @@ userSchema.methods.toPublicJSON = function toPublicJSON() {
     name: this.name,
     email: this.email,
     role: this.role || 'user',
+    isActive: this.isActive !== false,
     likedPromptIds: (this.likedPromptIds || []).map(String),
     createdAt: this.createdAt,
   }

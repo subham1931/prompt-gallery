@@ -24,6 +24,11 @@ export async function requireAuth(req, res, next) {
       return
     }
 
+    if (user.isActive === false) {
+      res.status(403).json({ error: 'Your account has been deactivated. Please contact a superadmin.' })
+      return
+    }
+
     req.user = user
     next()
   } catch (err) {

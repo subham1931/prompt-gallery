@@ -86,6 +86,20 @@ export function demoteAdmin(id) {
   })
 }
 
+export function updateAdminStatus(id, isActive, superadminPassword) {
+  return request(`/api/admins/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ isActive, superadminPassword }),
+  })
+}
+
+export function deleteAdmin(id, superadminPassword) {
+  return request(`/api/admins/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    body: JSON.stringify({ superadminPassword }),
+  })
+}
+
 export function listPrompts(params = {}) {
   const qs = new URLSearchParams()
   Object.entries(params).forEach(([k, v]) => {
