@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, Check, Filter, Heart, ImageIcon, Plus, Search, Trash2, X } from 'lucide-react'
+import { Calendar, Check, Filter, Flame, Heart, ImageIcon, Plus, Search, Trash2, X } from 'lucide-react'
 import { AdminHeader } from '../components/AdminHeader'
 import { Badge } from '../components/ui/Badge'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
@@ -268,9 +268,10 @@ export default function Dashboard() {
           </div>
 
         <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_1px_2px_rgba(16,24,40,0.03),0_1px_12px_rgba(16,24,40,0.04)]">
-          <div className="hidden grid-cols-[68px_1fr_95px_85px_70px_60px_130px_100px] gap-3 border-b border-border bg-surface-muted px-5 py-3 text-[11.5px] font-bold tracking-[0.04em] text-mute-light uppercase md:grid">
+          <div className="hidden grid-cols-[68px_1fr_95px_90px_80px_65px_60px_120px_90px] gap-3 border-b border-border bg-surface-muted px-5 py-3 text-[11.5px] font-bold tracking-[0.04em] text-mute-light uppercase md:grid">
             <span>Image</span>
             <span>Title</span>
+            <span>Trending</span>
             <span>Model</span>
             <span>Status</span>
             <span>Likes</span>
@@ -318,7 +319,7 @@ export default function Dashboard() {
               return (
                 <div
                   key={row.id}
-                  className="grid grid-cols-[52px_1fr] items-center gap-3 border-b border-border px-3 py-3.5 last:border-b-0 sm:px-5 md:grid-cols-[68px_1fr_95px_85px_70px_60px_130px_100px] md:gap-3"
+                  className="grid grid-cols-[52px_1fr] items-center gap-3 border-b border-border px-3 py-3.5 last:border-b-0 sm:px-5 md:grid-cols-[68px_1fr_95px_90px_80px_65px_60px_120px_90px] md:gap-3"
                 >
                   <div className="h-12 w-12 overflow-hidden rounded-lg border border-border bg-surface-subtle sm:h-14 sm:w-14 md:h-[52px] md:w-[52px]">
                     {thumb ? (
@@ -335,12 +336,10 @@ export default function Dashboard() {
                   </div>
 
                   <div className="min-w-0">
-                    <div className="flex min-w-0 items-center gap-2">
-                      <div className="truncate text-[13.5px] font-semibold">{row.title}</div>
-                      {row.trending && <Badge tone="orange">Trending</Badge>}
-                    </div>
+                    <div className="truncate text-[13.5px] font-semibold">{row.title}</div>
                     <div className="truncate text-xs text-mute-light">/prompts/{row.slug}</div>
                     <div className="mt-2 flex flex-wrap items-center gap-2 md:hidden">
+                      {row.trending && <Badge tone="orange">Trending</Badge>}
                       <Badge tone={statusLabel === 'Published' ? 'green' : 'default'}>
                         {statusLabel}
                       </Badge>
@@ -372,6 +371,13 @@ export default function Dashboard() {
                     </div>
                   </div>
 
+                  <div className="hidden md:block">
+                    {row.trending ? (
+                      <Badge tone="orange">Trending</Badge>
+                    ) : (
+                      <span className="text-xs text-mute-light">—</span>
+                    )}
+                  </div>
                   <div className="hidden text-[13px] text-mute md:block">{row.tool}</div>
                   <div className="hidden md:block">
                     <Badge tone={statusLabel === 'Published' ? 'green' : 'default'}>
