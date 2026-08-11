@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Eye, EyeOff, Plus, Search, Shield, Trash2, UserPlus, X } from 'lucide-react'
 import { AdminHeader } from '../components/AdminHeader'
 import { Badge } from '../components/ui/Badge'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
 import { Toast } from '../components/ui/Toast'
 import { useToast } from '../hooks/useToast'
+import { useDebounce } from '../hooks/useDebounce'
 import { createAdmin, deleteAdmin, listAdmins, updateAdminStatus } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 
@@ -15,8 +16,13 @@ export default function Admins() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
+  const debouncedSearchQuery = useDebounce(searchQuery, 300)
 
-  // Create Modal State
+  const filteredRows = useMemo(() => {
+    const q = debouncedSearchQuery.toLowerCase().trim()
+    if (!q) return rows
+    return rows.filter((row) => row.name?.toLowerCase().includes(q) || row.email?.toLowerCase().includes(q))
+  }, [rows, debouncedSearchQuery])
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -124,12 +130,6 @@ export default function Admins() {
     }
   }
 
-  const filteredRows = rows.filter((row) => {
-    const q = searchQuery.toLowerCase().trim()
-    if (!q) return true
-    return row.name?.toLowerCase().includes(q) || row.email?.toLowerCase().includes(q)
-  })
-
   return (
     <div className="min-h-screen bg-bg text-ink">
       <AdminHeader />
@@ -175,8 +175,18 @@ export default function Admins() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name or email..."
-                className="h-9 w-full rounded-xl border border-border bg-surface pl-9 pr-3 text-xs text-ink outline-none transition-all placeholder:text-mute-light focus:border-orange focus:ring-2 focus:ring-orange/15"
+                className="h-9 w-full rounded-xl border border-border bg-surface pl-9 pr-8 text-xs text-ink outline-none transition-all placeholder:text-mute-light focus:border-orange focus:ring-2 focus:ring-orange/15"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute top-1/2 right-2.5 -translate-y-1/2 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full text-mute-light hover:bg-surface-muted hover:text-ink border-none bg-transparent p-0"
+                  aria-label="Clear search"
+                >
+                  <X size={13} />
+                </button>
+              )}
             </div>
           </div>
 

@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Filter, Heart, ImageIcon, Plus, Search, Trash2 } from 'lucide-react'
+import { Check, Filter, Heart, ImageIcon, Plus, Search, Trash2, X } from 'lucide-react'
 import { AdminHeader } from '../components/AdminHeader'
 import { Badge } from '../components/ui/Badge'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
 import { Toast } from '../components/ui/Toast'
 import { useToast } from '../hooks/useToast'
+import { useDebounce } from '../hooks/useDebounce'
 import { deletePrompt, listPrompts } from '../api/client'
 import { computeSeoScore } from '../utils/seo'
 
@@ -44,6 +45,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
+  const debouncedQuery = useDebounce(query, 300)
   const [selectedFilters, setSelectedFilters] = useState([])
   const [filterOpen, setFilterOpen] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
@@ -86,7 +88,7 @@ export default function Dashboard() {
   }, [filterOpen])
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
+    const q = debouncedQuery.trim().toLowerCase()
     let list = rows
 
     if (selectedFilters.length > 0) {
@@ -102,7 +104,7 @@ export default function Dashboard() {
         r.slug.toLowerCase().includes(q) ||
         (r.tool || '').toLowerCase().includes(q),
     )
-  }, [rows, query, selectedFilters])
+  }, [rows, debouncedQuery, selectedFilters])
 
   const toggleFilter = (id) => {
     setSelectedFilters((prev) =>
@@ -168,8 +170,18 @@ export default function Dashboard() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search prompts..."
-                className="w-full rounded-[10px] border border-border bg-surface py-2.5 pr-3 pl-9 text-[13.5px] text-ink outline-none focus:border-orange focus:shadow-[0_0_0_3px_var(--color-orange-tint)]"
+                className="w-full rounded-[10px] border border-border bg-surface py-2.5 pr-8 pl-9 text-[13.5px] text-ink outline-none focus:border-orange focus:shadow-[0_0_0_3px_var(--color-orange-tint)]"
               />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery('')}
+                  className="absolute top-1/2 right-2.5 -translate-y-1/2 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full text-mute-light hover:bg-surface-muted hover:text-ink border-none bg-transparent p-0"
+                  aria-label="Clear search"
+                >
+                  <X size={13} />
+                </button>
+              )}
             </div>
 
             <div className="relative shrink-0" ref={filterRef}>

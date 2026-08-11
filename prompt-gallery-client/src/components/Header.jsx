@@ -4,6 +4,8 @@ import { Search, User, Aperture, X, LogOut } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import { useAuth } from '../context/AuthContext'
 
+import { useDebounce } from '../hooks/useDebounce'
+
 export default function Header() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -13,6 +15,7 @@ export default function Header() {
 
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState(urlQuery)
+  const debouncedQuery = useDebounce(query, 300)
   const [menuOpen, setMenuOpen] = useState(false)
   const inputRef = useRef(null)
   const searchRef = useRef(null)
@@ -22,6 +25,13 @@ export default function Header() {
     setQuery(urlQuery)
     if (urlQuery) setSearchOpen(true)
   }, [urlQuery])
+
+  useEffect(() => {
+    if (query !== urlQuery) {
+      applySearch(debouncedQuery)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedQuery])
 
   useEffect(() => {
     if (searchOpen) {
@@ -67,9 +77,7 @@ export default function Header() {
   }
 
   const handleChange = (e) => {
-    const value = e.target.value
-    setQuery(value)
-    applySearch(value)
+    setQuery(e.target.value)
   }
 
   const openSearch = () => {

@@ -2,12 +2,14 @@ import { useEffect, useMemo, useState } from 'react'
 import { FolderPlus, Plus, Search, Tag, X } from 'lucide-react'
 import { createCategory, listCategories } from '../api/client'
 import { slugify } from '../utils/seo'
+import { useDebounce } from '../hooks/useDebounce'
 
 export function CategoriesSection({ onToast }) {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const debouncedSearchQuery = useDebounce(searchQuery, 300)
 
   // Create Modal State
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -75,13 +77,13 @@ export function CategoriesSection({ onToast }) {
   }
 
   const filteredCategories = useMemo(() => {
-    const q = searchQuery.toLowerCase().trim()
+    const q = debouncedSearchQuery.toLowerCase().trim()
     if (!q) return categories
     return categories.filter(
       (cat) =>
         cat.name?.toLowerCase().includes(q) || cat.slug?.toLowerCase().includes(q),
     )
-  }, [categories, searchQuery])
+  }, [categories, debouncedSearchQuery])
 
   return (
     <div>
@@ -125,8 +127,18 @@ export function CategoriesSection({ onToast }) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search categories..."
-              className="h-9 w-full rounded-xl border border-border bg-surface pl-9 pr-3 text-xs text-ink outline-none transition-all placeholder:text-mute-light focus:border-orange focus:ring-2 focus:ring-orange/15"
+              className="h-9 w-full rounded-xl border border-border bg-surface pl-9 pr-8 text-xs text-ink outline-none transition-all placeholder:text-mute-light focus:border-orange focus:ring-2 focus:ring-orange/15"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute top-1/2 right-2.5 -translate-y-1/2 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full text-mute-light hover:bg-surface-muted hover:text-ink border-none bg-transparent p-0"
+                aria-label="Clear search"
+              >
+                <X size={13} />
+              </button>
+            )}
           </div>
         </div>
 
