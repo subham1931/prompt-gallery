@@ -424,20 +424,12 @@ export default function PromptEditor() {
       <div className="mx-auto max-w-[1180px] px-4 pt-5 pb-28 sm:px-6 sm:pt-6 md:pb-24 md:pl-20">
         {/* Top Header Row */}
         <div className="mb-6">
-          <div className="mb-1 flex items-center gap-2">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-mute no-underline hover:text-ink"
-            >
-              <ArrowLeft size={13} /> Prompts
-            </Link>
-            <span className="text-xs text-mute-light">/</span>
-            <span className="text-xs text-mute-light">Editor</span>
+          <div className="flex items-center gap-3">
+            <h1 className="m-0 text-2xl font-extrabold tracking-tight">
+              {isEdit ? 'Edit Prompt' : 'Create New Prompt'}
+            </h1>
             <Badge tone={seoTone}>SEO {seoScore}</Badge>
           </div>
-          <h1 className="m-0 text-2xl font-extrabold tracking-tight">
-            {isEdit ? 'Edit Prompt' : 'Create New Prompt'}
-          </h1>
           {title && (
             <p className="mt-1 text-xs text-mute truncate max-w-lg">
               Editing: <strong className="text-ink">{title}</strong>
