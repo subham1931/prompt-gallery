@@ -3,7 +3,7 @@ import { FolderOpen, Home, Shield } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const items = [
-  { to: '/', label: 'Home', match: (path) => path === '/' || path.startsWith('/prompts'), icon: Home },
+  { to: '/', label: 'Prompts', icon: Home, match: (path) => path === '/' || path.startsWith('/prompts') },
   {
     to: '/categories',
     label: 'Categories',
@@ -28,27 +28,26 @@ export function AdminSidebar() {
   return (
     <aside
       className="pointer-events-none fixed inset-x-0 bottom-3 z-50 flex justify-center px-3 md:inset-x-auto md:top-1/2 md:bottom-auto md:left-4 md:block md:-translate-y-1/2 md:px-0"
-      aria-label="Primary navigation"
+      aria-label="Primary"
     >
-      <nav className="group/sidebar pointer-events-auto flex flex-row gap-1.5 overflow-hidden rounded-2xl border border-border bg-surface/95 p-1.5 shadow-[0_8px_28px_rgba(16,24,40,0.16)] backdrop-blur-md transition-all duration-300 ease-in-out md:w-[54px] md:flex-col md:hover:w-44">
+      <nav className="pointer-events-auto flex flex-row gap-1 rounded-2xl border border-border bg-surface/95 p-1.5 shadow-[0_8px_28px_rgba(16,24,40,0.14)] backdrop-blur-md md:flex-col md:gap-1.5">
         {visible.map(({ to, label, icon: Icon, match }) => {
           const active = match(pathname)
           return (
             <Link
               key={to}
               to={to}
+              title={label}
               aria-label={label}
               aria-current={active ? 'page' : undefined}
-              className={`flex h-10 w-full items-center rounded-xl px-2.5 no-underline transition-all duration-200 ${
+              className={`group relative flex h-11 w-11 items-center justify-center rounded-xl no-underline transition-colors md:h-10 md:w-10 ${
                 active
                   ? 'bg-orange text-white shadow-[0_2px_8px_rgba(255,122,0,0.35)]'
                   : 'text-mute hover:bg-surface-muted hover:text-ink'
               }`}
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center">
-                <Icon size={18} strokeWidth={active ? 2.25 : 2} />
-              </div>
-              <span className="whitespace-nowrap text-[13px] font-bold tracking-tight opacity-100 transition-all duration-300 ease-in-out md:max-w-0 md:opacity-0 md:group-hover/sidebar:max-w-[120px] md:group-hover/sidebar:opacity-100 md:group-hover/sidebar:ml-1">
+              <Icon size={18} strokeWidth={active ? 2.25 : 2} />
+              <span className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-border bg-surface px-2 py-1 text-[11px] font-semibold text-ink opacity-0 shadow-sm transition-opacity group-hover:opacity-100 md:bottom-auto md:top-1/2 md:left-[calc(100%+10px)] md:block md:translate-x-0 md:-translate-y-1/2">
                 {label}
               </span>
             </Link>
