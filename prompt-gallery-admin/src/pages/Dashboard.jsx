@@ -4,6 +4,7 @@ import { Calendar, Check, Filter, Heart, ImageIcon, Plus, Search, Trash2, X } fr
 import { AdminHeader } from '../components/AdminHeader'
 import { Badge } from '../components/ui/Badge'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
+import { PromptEditorModal } from '../components/PromptEditorModal'
 import { Toast } from '../components/ui/Toast'
 import { useToast } from '../hooks/useToast'
 import { useDebounce } from '../hooks/useDebounce'
@@ -81,26 +82,36 @@ export default function Dashboard() {
   const [filterOpen, setFilterOpen] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const [pendingDelete, setPendingDelete] = useState(null)
+  const [isEditorModalOpen, setIsEditorModalOpen] = useState(false)
+  const [editingPromptId, setEditingPromptId] = useState(null)
   const filterRef = useRef(null)
 
-  useEffect(() => {
-    let cancelled = false
+  const loadPrompts = () => {
     setLoading(true)
     setError('')
     listPrompts({ status: 'all', sort: 'latest' })
-      .then(({ data }) => {
-        if (!cancelled) setRows(data || [])
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err.message || 'Failed to load prompts')
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
-    return () => {
-      cancelled = true
-    }
+      .then(({ data }) => setRows(data || []))
+      .catch((err) => setError(err.message || 'Failed to load prompts'))
+      .finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    loadPrompts()
   }, [])
+
+  const openCreateModal = () => {
+    setEditingPromptId(null)
+    setIsEditorModalOpen(true)
+  }
+
+  const openEditModal = (id) => {
+    setEditingPromptId(id)
+    setIsEditorModalOpen(true)
+  }
+
+  const handleEditorSuccess = () => {
+    loadPrompts()
+  }
 
   useEffect(() => {
     if (!filterOpen) return
@@ -182,13 +193,14 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <Link
-            to="/prompts/new"
-            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-orange px-4 py-2.5 text-xs font-bold text-white no-underline shadow-[0_3px_12px_rgba(255,122,0,0.35)] transition-all hover:bg-orange-dark hover:shadow-[0_4px_16px_rgba(255,122,0,0.45)] active:scale-[0.98]"
+          <button
+            type="button"
+            onClick={openCreateModal}
+            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-orange px-4 py-2.5 text-xs font-bold text-white shadow-[0_3px_12px_rgba(255,122,0,0.35)] transition-all hover:bg-orange-dark hover:shadow-[0_4px_16px_rgba(255,122,0,0.45)] active:scale-[0.98]"
           >
             <Plus size={16} />
             <span>Create New Prompt</span>
-          </Link>
+          </button>
         </div>
           <div className="mb-5 flex w-full items-center gap-2 sm:max-w-md">
             <div className="relative min-w-0 flex-1">
@@ -288,9 +300,13 @@ export default function Dashboard() {
           {!loading && !error && filtered.length === 0 && (
             <div className="px-4 py-10 text-center text-[13px] text-mute sm:px-5">
               No prompts yet.{' '}
-              <Link to="/prompts/new" className="font-semibold text-orange-dark">
+              <button
+                type="button"
+                onClick={openCreateModal}
+                className="cursor-pointer border-none bg-transparent p-0 font-semibold text-orange-dark"
+              >
                 Create one
-              </Link>
+              </button>
             </div>
           )}
 
@@ -356,12 +372,13 @@ export default function Dashboard() {
                       <span className="text-xs text-mute">{row.tool}</span>
                     </div>
                     <div className="mt-2 flex gap-3 md:hidden">
-                      <Link
-                        to={`/prompts/${row.id}/edit`}
-                        className="text-[13px] font-semibold text-orange-dark no-underline"
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(row.id)}
+                        className="cursor-pointer border-none bg-transparent p-0 text-[13px] font-semibold text-orange-dark"
                       >
                         Edit
-                      </Link>
+                      </button>
                       <button
                         type="button"
                         onClick={() => askDelete(row)}
@@ -394,12 +411,13 @@ export default function Dashboard() {
                     </span>
                   </div>
                   <div className="hidden items-center justify-end gap-3 md:flex">
-                    <Link
-                      to={`/prompts/${row.id}/edit`}
-                      className="text-[13px] font-semibold text-orange-dark no-underline"
+                    <button
+                      type="button"
+                      onClick={() => openEditModal(row.id)}
+                      className="cursor-pointer border-none bg-transparent p-0 text-[13px] font-semibold text-orange-dark"
                     >
                       Edit
-                    </Link>
+                    </button>
                     <button
                       type="button"
                       onClick={() => askDelete(row)}
@@ -429,6 +447,13 @@ export default function Dashboard() {
           />
         </div>
       </div>
+
+      <PromptEditorModal
+        open={isEditorModalOpen}
+        promptId={editingPromptId}
+        onClose={() => setIsEditorModalOpen(false)}
+        onSuccess={handleEditorSuccess}
+      />
 
       <Toast toasts={toasts} />
     </div>
