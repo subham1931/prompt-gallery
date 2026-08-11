@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Filter, Heart, ImageIcon, Plus, Search, Trash2, X } from 'lucide-react'
+import { Calendar, Check, Filter, Heart, ImageIcon, Plus, Search, Trash2, X } from 'lucide-react'
 import { AdminHeader } from '../components/AdminHeader'
 import { Badge } from '../components/ui/Badge'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
@@ -20,6 +20,37 @@ function formatLikes(n) {
   const value = Number(n) || 0
   if (value >= 1000) return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}k`
   return String(value)
+}
+
+function formatRelativeDate(dateInput) {
+  if (!dateInput) return '—'
+  const date = new Date(dateInput)
+  if (isNaN(date.getTime())) return '—'
+
+  const now = new Date()
+  const diffInSeconds = Math.floor((now - date) / 1000)
+
+  if (diffInSeconds < 0 || diffInSeconds < 60) return 'Just now'
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60)
+  if (diffInMinutes < 60) {
+    return diffInMinutes === 1 ? '1 minute ago' : `${diffInMinutes} minutes ago`
+  }
+
+  const diffInHours = Math.floor(diffInMinutes / 60)
+  if (diffInHours < 24) {
+    return diffInHours === 1 ? '1 hour ago' : `${diffInHours} hours ago`
+  }
+
+  const diffInDays = Math.floor(diffInHours / 24)
+  if (diffInDays === 1) return 'Yesterday'
+  if (diffInDays < 7) return `${diffInDays} days ago`
+
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
 }
 
 function matchesFilter(row, id) {
@@ -237,13 +268,14 @@ export default function Dashboard() {
           </div>
 
         <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_1px_2px_rgba(16,24,40,0.03),0_1px_12px_rgba(16,24,40,0.04)]">
-          <div className="hidden grid-cols-[72px_1fr_100px_90px_80px_70px_120px] gap-3 border-b border-border bg-surface-muted px-5 py-3 text-[11.5px] font-bold tracking-[0.04em] text-mute-light uppercase md:grid">
+          <div className="hidden grid-cols-[68px_1fr_95px_85px_70px_60px_130px_100px] gap-3 border-b border-border bg-surface-muted px-5 py-3 text-[11.5px] font-bold tracking-[0.04em] text-mute-light uppercase md:grid">
             <span>Image</span>
             <span>Title</span>
             <span>Model</span>
             <span>Status</span>
             <span>Likes</span>
             <span>SEO</span>
+            <span>Date</span>
             <span className="text-right">Actions</span>
           </div>
 
@@ -286,7 +318,7 @@ export default function Dashboard() {
               return (
                 <div
                   key={row.id}
-                  className="grid grid-cols-[52px_1fr] items-center gap-3 border-b border-border px-3 py-3.5 last:border-b-0 sm:px-5 md:grid-cols-[72px_1fr_100px_90px_80px_70px_120px] md:gap-3"
+                  className="grid grid-cols-[52px_1fr] items-center gap-3 border-b border-border px-3 py-3.5 last:border-b-0 sm:px-5 md:grid-cols-[68px_1fr_95px_85px_70px_60px_130px_100px] md:gap-3"
                 >
                   <div className="h-12 w-12 overflow-hidden rounded-lg border border-border bg-surface-subtle sm:h-14 sm:w-14 md:h-[52px] md:w-[52px]">
                     {thumb ? (
@@ -317,6 +349,10 @@ export default function Dashboard() {
                         {formatLikes(likes)}
                       </span>
                       <Badge tone={seo >= 80 ? 'green' : 'orange'}>{seo}</Badge>
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-mute">
+                        <Calendar size={12} className="text-mute-light shrink-0" />
+                        {formatRelativeDate(row.createdAt || row.date)}
+                      </span>
                       <span className="text-xs text-mute">{row.tool}</span>
                     </div>
                     <div className="mt-2 flex gap-3 md:hidden">
@@ -350,6 +386,12 @@ export default function Dashboard() {
                   </div>
                   <div className="hidden md:block">
                     <Badge tone={seo >= 80 ? 'green' : 'orange'}>{seo}</Badge>
+                  </div>
+                  <div className="hidden md:block">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-mute whitespace-nowrap">
+                      <Calendar size={13} className="text-mute-light shrink-0" />
+                      {formatRelativeDate(row.createdAt || row.date)}
+                    </span>
                   </div>
                   <div className="hidden items-center justify-end gap-3 md:flex">
                     <Link
