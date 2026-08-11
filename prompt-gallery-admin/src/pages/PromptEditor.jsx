@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { Loader2 } from 'lucide-react'
-import { TopBar } from '../components/TopBar'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { ArrowLeft, Loader2, Save } from 'lucide-react'
+import { AdminHeader } from '../components/AdminHeader'
+import { Badge } from '../components/ui/Badge'
 import { PromptTextCard } from '../components/PromptTextCard'
 import { TitleUrlCard } from '../components/TitleUrlCard'
 import { ImagesCard } from '../components/ImagesCard'
@@ -385,6 +386,15 @@ export default function PromptEditor() {
     }
   }
 
+  const seoTone = seoScore >= 80 ? 'green' : 'orange'
+  const saveLabel = saving
+    ? isEdit
+      ? 'Saving changes…'
+      : 'Creating prompt…'
+    : isEdit
+      ? 'Save Changes'
+      : 'Create Prompt'
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-bg text-[13px] text-mute">
@@ -395,13 +405,7 @@ export default function PromptEditor() {
 
   return (
     <div className="relative min-h-screen bg-bg text-ink">
-      <TopBar
-        title={title}
-        seoScore={seoScore}
-        onSave={handleSave}
-        saving={saving}
-        isEdit={Boolean(promptId)}
-      />
+      <AdminHeader />
 
       {saving && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg/70 backdrop-blur-[2px]">
@@ -418,6 +422,52 @@ export default function PromptEditor() {
       )}
 
       <div className="mx-auto max-w-[1180px] px-4 pt-5 pb-28 sm:px-6 sm:pt-6 md:pb-24 md:pl-20">
+        {/* Top Action Header Row */}
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="mb-1 flex items-center gap-2">
+              <Link
+                to="/"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-mute no-underline hover:text-ink"
+              >
+                <ArrowLeft size={13} /> Prompts
+              </Link>
+              <span className="text-xs text-mute-light">/</span>
+              <span className="text-xs text-mute-light">Editor</span>
+              <Badge tone={seoTone}>SEO {seoScore}</Badge>
+            </div>
+            <h1 className="m-0 text-2xl font-extrabold tracking-tight">
+              {isEdit ? 'Edit Prompt' : 'Create New Prompt'}
+            </h1>
+            {title && (
+              <p className="mt-1 text-xs text-mute truncate max-w-lg">
+                Editing: <strong className="text-ink">{title}</strong>
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              to="/"
+              className={`inline-flex items-center justify-center rounded-xl border border-border bg-surface px-4 py-2.5 text-xs font-bold text-mute no-underline transition-colors hover:bg-surface-muted hover:text-ink ${
+                saving ? 'pointer-events-none opacity-50' : ''
+              }`}
+            >
+              Cancel
+            </Link>
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-orange px-5 py-2.5 text-xs font-bold text-white shadow-[0_3px_12px_rgba(255,122,0,0.35)] transition-all hover:bg-orange-dark hover:shadow-[0_4px_16px_rgba(255,122,0,0.45)] disabled:opacity-60 active:scale-[0.98]"
+            >
+              {saving ? <Loader2 size={16} className="animate-spin-slow" /> : <Save size={16} />}
+              <span>{saveLabel}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 2-Column Editor Form Grid */}
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
           <div className="flex min-w-0 flex-col gap-3">
             <p className="m-0 px-0.5 text-[11px] font-semibold tracking-[0.06em] text-mute-light uppercase">
@@ -457,11 +507,11 @@ export default function PromptEditor() {
                 setTags={setTags}
                 trending={trending}
                 setTrending={setTrending}
-              status={status}
-              setStatus={setStatus}
-              errors={errors}
-              categories={categoryOptions}
-            />
+                status={status}
+                setStatus={setStatus}
+                errors={errors}
+                categories={categoryOptions}
+              />
             </div>
             <div data-field="images">
               <ImagesCard
@@ -516,6 +566,36 @@ export default function PromptEditor() {
               ogDesc={ogDesc}
               featuredImage={featuredImage}
             />
+          </div>
+        </div>
+
+        {/* Bottom Action Footer Bar */}
+        <div className="mt-8 flex items-center justify-between rounded-2xl border border-border bg-surface p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <Badge tone={seoTone}>SEO Score {seoScore}/100</Badge>
+            <span className="hidden text-xs text-mute sm:inline">
+              {saving ? 'Saving prompt details...' : 'Review your content and click Save when ready.'}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              to="/"
+              className={`inline-flex items-center justify-center rounded-xl border border-border bg-surface-muted px-4 py-2.5 text-xs font-bold text-mute no-underline transition-colors hover:bg-surface-subtle hover:text-ink ${
+                saving ? 'pointer-events-none opacity-50' : ''
+              }`}
+            >
+              Cancel
+            </Link>
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-orange px-5 py-2.5 text-xs font-bold text-white shadow-[0_3px_12px_rgba(255,122,0,0.35)] transition-all hover:bg-orange-dark hover:shadow-[0_4px_16px_rgba(255,122,0,0.45)] disabled:opacity-60 active:scale-[0.98]"
+            >
+              {saving ? <Loader2 size={16} className="animate-spin-slow" /> : <Save size={16} />}
+              <span>{saveLabel}</span>
+            </button>
           </div>
         </div>
       </div>
