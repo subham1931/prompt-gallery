@@ -422,49 +422,27 @@ export default function PromptEditor() {
       )}
 
       <div className="mx-auto max-w-[1180px] px-4 pt-5 pb-28 sm:px-6 sm:pt-6 md:pb-24 md:pl-20">
-        {/* Top Action Header Row */}
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="mb-1 flex items-center gap-2">
-              <Link
-                to="/"
-                className="inline-flex items-center gap-1 text-xs font-semibold text-mute no-underline hover:text-ink"
-              >
-                <ArrowLeft size={13} /> Prompts
-              </Link>
-              <span className="text-xs text-mute-light">/</span>
-              <span className="text-xs text-mute-light">Editor</span>
-              <Badge tone={seoTone}>SEO {seoScore}</Badge>
-            </div>
-            <h1 className="m-0 text-2xl font-extrabold tracking-tight">
-              {isEdit ? 'Edit Prompt' : 'Create New Prompt'}
-            </h1>
-            {title && (
-              <p className="mt-1 text-xs text-mute truncate max-w-lg">
-                Editing: <strong className="text-ink">{title}</strong>
-              </p>
-            )}
-          </div>
-
-          <div className="flex items-center gap-3">
+        {/* Top Header Row */}
+        <div className="mb-6">
+          <div className="mb-1 flex items-center gap-2">
             <Link
               to="/"
-              className={`inline-flex items-center justify-center rounded-xl border border-border bg-surface px-4 py-2.5 text-xs font-bold text-mute no-underline transition-colors hover:bg-surface-muted hover:text-ink ${
-                saving ? 'pointer-events-none opacity-50' : ''
-              }`}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-mute no-underline hover:text-ink"
             >
-              Cancel
+              <ArrowLeft size={13} /> Prompts
             </Link>
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-orange px-5 py-2.5 text-xs font-bold text-white shadow-[0_3px_12px_rgba(255,122,0,0.35)] transition-all hover:bg-orange-dark hover:shadow-[0_4px_16px_rgba(255,122,0,0.45)] disabled:opacity-60 active:scale-[0.98]"
-            >
-              {saving ? <Loader2 size={16} className="animate-spin-slow" /> : <Save size={16} />}
-              <span>{saveLabel}</span>
-            </button>
+            <span className="text-xs text-mute-light">/</span>
+            <span className="text-xs text-mute-light">Editor</span>
+            <Badge tone={seoTone}>SEO {seoScore}</Badge>
           </div>
+          <h1 className="m-0 text-2xl font-extrabold tracking-tight">
+            {isEdit ? 'Edit Prompt' : 'Create New Prompt'}
+          </h1>
+          {title && (
+            <p className="mt-1 text-xs text-mute truncate max-w-lg">
+              Editing: <strong className="text-ink">{title}</strong>
+            </p>
+          )}
         </div>
 
         {/* 2-Column Editor Form Grid */}
