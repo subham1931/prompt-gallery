@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { FolderOpen, Home, Shield } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
