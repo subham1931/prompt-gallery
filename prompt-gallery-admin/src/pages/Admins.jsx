@@ -155,14 +155,14 @@ export default function Admins() {
         </div>
 
         {/* Full-width Data Table Card */}
-        <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_1px_2px_rgba(16,24,40,0.03),0_1px_12px_rgba(16,24,40,0.04)]">
+        <div className="overflow-hidden rounded-2xl border border-border bg-surface/90">
           {/* Table Header Filter / Toolbar */}
-          <div className="flex flex-col gap-3 border-b border-border bg-surface-muted/60 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-3 border-b border-border/80 bg-surface-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2.5">
               <span className="text-xs font-bold uppercase tracking-wider text-mute-light">
                 Staff Directory
               </span>
-              <span className="inline-flex items-center rounded-full bg-orange-tint px-2.5 py-0.5 text-[11px] font-extrabold text-orange-dark">
+              <span className="inline-flex items-center rounded-md bg-orange/10 px-2.5 py-0.5 text-[11px] font-bold text-orange-dark border border-orange/20">
                 {rows.length} {rows.length === 1 ? 'Account' : 'Accounts'}
               </span>
             </div>
@@ -207,14 +207,14 @@ export default function Admins() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-border bg-surface-subtle/40 text-[11px] font-bold uppercase tracking-wider text-mute-light">
+                  <tr className="border-b border-border/80 bg-surface-muted/20 text-[11px] font-medium uppercase tracking-wider text-mute-light">
                     <th className="py-3.5 px-5">Administrator</th>
                     <th className="py-3.5 px-4">Role</th>
                     <th className="py-3.5 px-4">Status</th>
                     <th className="py-3.5 px-5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-border/60">
                   {filteredRows.map((row) => {
                     const isSelf = row.id === user?.id
                     const isSuper = row.role === 'superadmin'
@@ -223,14 +223,14 @@ export default function Admins() {
                     return (
                       <tr
                         key={row.id}
-                        className={`transition-colors hover:bg-surface-muted/50 ${
+                        className={`transition-colors hover:bg-surface-muted/30 ${
                           !isActive ? 'bg-surface-subtle/40 opacity-75' : ''
                         }`}
                       >
                         {/* Admin Info */}
                         <td className="py-3.5 px-5">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-tint text-orange-dark font-bold text-xs">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-tint text-orange-dark font-bold text-xs">
                               {row.name ? row.name[0].toUpperCase() : <Shield size={16} />}
                             </div>
                             <div className="min-w-0">
@@ -238,23 +238,35 @@ export default function Admins() {
                                 <span className="font-bold text-ink text-xs sm:text-sm truncate">
                                   {row.name}
                                 </span>
-                                {isSelf && <Badge tone="green">You</Badge>}
+                                {isSelf && (
+                                  <span className="inline-flex items-center rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/20">
+                                    You
+                                  </span>
+                                )}
                               </div>
-                              <div className="text-mute text-[11.5px] truncate">{row.email}</div>
+                              <div className="text-mute-light text-[11.5px] truncate">{row.email}</div>
                             </div>
                           </div>
                         </td>
 
                         {/* Role Badge */}
                         <td className="py-3.5 px-4">
-                          <Badge tone={isSuper ? 'orange' : 'default'}>{row.role}</Badge>
+                          {isSuper ? (
+                            <span className="inline-flex items-center rounded-md bg-amber-500/10 px-2 py-0.5 text-xs font-bold text-amber-400 border border-amber-500/20">
+                              Superadmin
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center rounded-md bg-surface-muted px-2 py-0.5 text-xs font-medium text-mute">
+                              Admin
+                            </span>
+                          )}
                         </td>
 
                         {/* Status Toggle */}
                         <td className="py-3.5 px-4">
                           {isSelf ? (
-                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-green">
-                              <span className="h-2 w-2 rounded-full bg-green" /> Active
+                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
+                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Active
                             </span>
                           ) : (
                             <button

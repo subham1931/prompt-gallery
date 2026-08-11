@@ -267,8 +267,8 @@ export default function Dashboard() {
             </div>
           </div>
 
-        <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_1px_2px_rgba(16,24,40,0.03),0_1px_12px_rgba(16,24,40,0.04)]">
-          <div className="hidden grid-cols-[68px_1fr_95px_90px_80px_65px_60px_120px_90px] gap-3 border-b border-border bg-surface-muted px-5 py-3 text-[11.5px] font-bold tracking-[0.04em] text-mute-light uppercase md:grid">
+        <div className="overflow-hidden rounded-2xl border border-border bg-surface/90">
+          <div className="hidden grid-cols-[64px_1fr_95px_90px_85px_65px_60px_120px_90px] gap-3 border-b border-border bg-surface-muted/40 px-5 py-3.5 text-[11.5px] font-bold tracking-[0.05em] text-mute-light uppercase md:grid">
             <span>Image</span>
             <span>Title</span>
             <span>Trending</span>
@@ -312,16 +312,16 @@ export default function Dashboard() {
                   BlogPosting: false,
                 },
               })
-              const statusLabel = row.status === 'draft' ? 'Draft' : 'Published'
+              const isPublished = row.status !== 'draft'
               const thumb = row.image || row.images?.[0]?.url || ''
               const likes = Number(row.likeCount) || 0
 
               return (
                 <div
                   key={row.id}
-                  className="grid grid-cols-[52px_1fr] items-center gap-3 border-b border-border px-3 py-3.5 last:border-b-0 sm:px-5 md:grid-cols-[68px_1fr_95px_90px_80px_65px_60px_120px_90px] md:gap-3"
+                  className="grid grid-cols-[48px_1fr] items-center gap-3 border-b border-border/60 px-4 py-3 transition-colors hover:bg-surface-muted/30 last:border-b-0 sm:px-5 md:grid-cols-[64px_1fr_95px_90px_85px_65px_60px_120px_90px] md:gap-3"
                 >
-                  <div className="h-12 w-12 overflow-hidden rounded-lg border border-border bg-surface-subtle sm:h-14 sm:w-14 md:h-[52px] md:w-[52px]">
+                  <div className="h-11 w-11 overflow-hidden rounded-xl border border-border/80 bg-surface-subtle sm:h-12 sm:w-12 md:h-[46px] md:w-[46px]">
                     {thumb ? (
                       <img
                         src={thumb}
@@ -336,12 +336,12 @@ export default function Dashboard() {
                   </div>
 
                   <div className="min-w-0">
-                    <div className="truncate text-[13.5px] font-semibold">{row.title}</div>
+                    <div className="truncate text-[13.5px] font-bold text-ink">{row.title}</div>
                     <div className="truncate text-xs text-mute-light">/prompts/{row.slug}</div>
                     <div className="mt-2 flex flex-wrap items-center gap-2 md:hidden">
                       {row.trending && <Badge tone="orange">Trending</Badge>}
-                      <Badge tone={statusLabel === 'Published' ? 'green' : 'default'}>
-                        {statusLabel}
+                      <Badge tone={isPublished ? 'green' : 'default'}>
+                        {isPublished ? 'Published' : 'Draft'}
                       </Badge>
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-mute">
                         <Heart size={12} className="text-orange" />
@@ -357,14 +357,14 @@ export default function Dashboard() {
                     <div className="mt-2 flex gap-3 md:hidden">
                       <Link
                         to={`/prompts/${row.id}/edit`}
-                        className="text-[13px] font-semibold text-orange-dark no-underline"
+                        className="text-[13px] font-medium text-mute hover:text-orange transition-colors no-underline"
                       >
                         Edit
                       </Link>
                       <button
                         type="button"
                         onClick={() => askDelete(row)}
-                        className="cursor-pointer border-none bg-transparent p-0 text-[13px] font-semibold text-red"
+                        className="cursor-pointer border-none bg-transparent p-0 text-[13px] font-semibold text-mute hover:text-red transition-colors"
                       >
                         Delete
                       </button>
@@ -375,34 +375,37 @@ export default function Dashboard() {
                     {row.trending ? (
                       <Badge tone="orange">Trending</Badge>
                     ) : (
-                      <span className="text-xs text-mute-light">—</span>
+                      <span className="text-xs text-mute-light/70">—</span>
                     )}
                   </div>
-                  <div className="hidden text-[13px] text-mute md:block">{row.tool}</div>
+                  <div className="hidden text-[13px] font-medium text-mute md:block">{row.tool}</div>
                   <div className="hidden md:block">
-                    <Badge tone={statusLabel === 'Published' ? 'green' : 'default'}>
-                      {statusLabel}
-                    </Badge>
+                    <span className={`inline-flex items-center gap-1.5 text-[12.5px] font-semibold ${isPublished ? 'text-emerald-400' : 'text-mute-light'}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${isPublished ? 'bg-emerald-400' : 'bg-mute-light'}`} />
+                      {isPublished ? 'Published' : 'Draft'}
+                    </span>
                   </div>
                   <div className="hidden md:block">
                     <span className="inline-flex items-center gap-1 text-[13px] font-medium text-ink">
-                      <Heart size={13} className="text-orange" fill="currentColor" />
+                      <Heart size={13} className="text-orange fill-orange" />
                       {formatLikes(likes)}
                     </span>
                   </div>
                   <div className="hidden md:block">
-                    <Badge tone={seo >= 80 ? 'green' : 'orange'}>{seo}</Badge>
+                    <span className="text-[13px] font-medium text-mute">
+                      {seo}
+                    </span>
                   </div>
                   <div className="hidden md:block">
                     <span className="inline-flex items-center gap-1.5 text-xs font-medium text-mute whitespace-nowrap">
-                      <Calendar size={13} className="text-mute-light shrink-0" />
+                      <Calendar size={13} className="text-mute-light/70 shrink-0" />
                       {formatRelativeDate(row.createdAt || row.date)}
                     </span>
                   </div>
-                  <div className="hidden items-center justify-end gap-3 md:flex">
+                  <div className="hidden items-center justify-end gap-3.5 md:flex">
                     <Link
                       to={`/prompts/${row.id}/edit`}
-                      className="text-[13px] font-semibold text-orange-dark no-underline"
+                      className="text-[13px] font-medium text-mute hover:text-orange transition-colors no-underline"
                     >
                       Edit
                     </Link>
@@ -410,9 +413,9 @@ export default function Dashboard() {
                       type="button"
                       onClick={() => askDelete(row)}
                       title="Delete prompt"
-                      className="inline-flex cursor-pointer items-center gap-1 border-none bg-transparent p-0 text-[13px] font-semibold text-red"
+                      className="inline-flex cursor-pointer items-center gap-1 border-none bg-transparent p-0 text-[13px] font-semibold text-mute hover:text-red transition-colors"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={13} />
                       Delete
                     </button>
                   </div>

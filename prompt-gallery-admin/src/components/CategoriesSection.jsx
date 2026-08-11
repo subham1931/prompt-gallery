@@ -107,14 +107,14 @@ export function CategoriesSection({ onToast }) {
       </div>
 
       {/* Full-width Data Table Card */}
-      <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_1px_2px_rgba(16,24,40,0.03),0_1px_12px_rgba(16,24,40,0.04)]">
+      <div className="overflow-hidden rounded-2xl border border-border bg-surface/90">
         {/* Table Header / Toolbar */}
-        <div className="flex flex-col gap-3 border-b border-border bg-surface-muted/60 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-3 border-b border-border/80 bg-surface-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2.5">
             <span className="text-xs font-bold uppercase tracking-wider text-mute-light">
               Category Directory
             </span>
-            <span className="inline-flex items-center rounded-full bg-orange-tint px-2.5 py-0.5 text-[11px] font-extrabold text-orange-dark">
+            <span className="inline-flex items-center rounded-md bg-orange/10 px-2.5 py-0.5 text-[11px] font-bold text-orange-dark border border-orange/20">
               {categories.length} {categories.length === 1 ? 'Category' : 'Categories'}
             </span>
           </div>
@@ -156,22 +156,22 @@ export function CategoriesSection({ onToast }) {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-border bg-surface-subtle/40 text-[11px] font-bold uppercase tracking-wider text-mute-light">
+                <tr className="border-b border-border/80 bg-surface-muted/20 text-[11px] font-medium uppercase tracking-wider text-mute-light">
                   <th className="py-3.5 px-5">Category</th>
                   <th className="py-3.5 px-4">Slug Path</th>
                   <th className="py-3.5 px-5 text-right">Prompts Count</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody className="divide-y divide-border/60">
                 {filteredCategories.map((cat) => (
                   <tr
                     key={cat.id}
-                    className="transition-colors hover:bg-surface-muted/50"
+                    className="transition-colors hover:bg-surface-muted/30"
                   >
                     {/* Category Icon & Name */}
                     <td className="py-3.5 px-5">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-tint text-orange-dark font-extrabold text-xs">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-tint text-orange-dark font-extrabold text-xs">
                           {cat.icon || cat.name.slice(0, 2).toUpperCase()}
                         </div>
                         <div className="min-w-0">
