@@ -7,18 +7,18 @@ import { DateTimePicker } from './ui/DateTimePicker'
 import { AI_MODELS, CATEGORIES } from '../utils/seo'
 
 export function TitleUrlCard({
-  title,
+  title = '',
   setTitle,
-  slug,
+  slug = '',
   setSlug,
   setSlugEdited,
-  aiModel,
+  aiModel = 'ChatGPT',
   setAiModel,
-  category,
+  category = 'Cinematic',
   setCategory,
-  tags,
+  tags = '',
   setTags,
-  trending,
+  trending = false,
   setTrending,
   status = 'published',
   setStatus,
@@ -28,6 +28,9 @@ export function TitleUrlCard({
   categories = CATEGORIES,
 }) {
   const categoryOptions = categories?.length ? categories : CATEGORIES
+  const titleStr = title || ''
+  const slugStr = slug || ''
+  const tagsStr = tags || ''
   return (
     <Card title="Details" description="Title, URL, model, and gallery metadata.">
       {setStatus && (
@@ -65,11 +68,11 @@ export function TitleUrlCard({
       <Field
         label="Prompt title"
         required
-        counter={`${title.length}/70`}
+        counter={`${titleStr.length}/70`}
         error={errors.title}
       >
         <TextInput
-          value={title}
+          value={titleStr}
           error={Boolean(errors.title)}
           onChange={(e) => setTitle(e.target.value)}
           maxLength={70}
@@ -86,7 +89,7 @@ export function TitleUrlCard({
             /prompts/
           </div>
           <TextInput
-            value={slug}
+            value={slugStr}
             error={Boolean(errors.slug)}
             onChange={(e) => {
               setSlug(e.target.value)
@@ -129,7 +132,7 @@ export function TitleUrlCard({
 
       <Field label="Tags" hint="Comma-separated tags shown on the gallery card.">
         <TextInput
-          value={tags}
+          value={tagsStr}
           onChange={(e) => setTags(e.target.value)}
           placeholder="Portraits, Cinematic, Realistic"
         />

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Loader2, Save } from 'lucide-react'
+import { ArrowLeft, Eye, Loader2, Save } from 'lucide-react'
 import { AdminHeader } from '../components/AdminHeader'
 import { Badge } from '../components/ui/Badge'
 import { PromptTextCard } from '../components/PromptTextCard'
@@ -9,8 +9,10 @@ import { ImagesCard } from '../components/ImagesCard'
 import { SchemaCard } from '../components/SchemaCard'
 import { SeoCard } from '../components/SeoCard'
 import { SeoPreviewCard } from '../components/SeoPreviewCard'
+import { PromptPreviewModal } from '../components/PromptPreviewModal'
 import { Toast } from '../components/ui/Toast'
 import { useToast } from '../hooks/useToast'
+import { useNotifications } from '../context/NotificationContext'
 import { computeSeoScore, slugify } from '../utils/seo'
 import {
   createPrompt,
@@ -92,6 +94,7 @@ export default function PromptEditor() {
   const isEdit = Boolean(id)
   const navigate = useNavigate()
   const { toasts, pushToast } = useToast()
+  const { addNotification } = useNotifications()
 
   const [loading, setLoading] = useState(isEdit)
   const [saving, setSaving] = useState(false)
@@ -109,6 +112,7 @@ export default function PromptEditor() {
   const [trending, setTrending] = useState(false)
   const [status, setStatus] = useState('published')
   const [scheduledAt, setScheduledAt] = useState('')
+  const [previewOpen, setPreviewOpen] = useState(false)
 
   const [metaTitle, setMetaTitle] = useState('')
   const [metaDesc, setMetaDesc] = useState('')
@@ -389,10 +393,23 @@ export default function PromptEditor() {
       if (promptId) {
         await updatePrompt(promptId, payload)
         pushToast('Changes saved successfully')
+        addNotification({
+          title: status === 'scheduled' ? 'Prompt Schedule Updated' : 'Prompt Updated',
+          message: `Prompt "${title.trim()}" was updated successfully.`,
+          type: status === 'scheduled' ? 'schedule' : 'create',
+        })
         setTimeout(() => navigate('/'), 700)
       } else {
         await createPrompt(payload)
         pushToast('Created successfully')
+        addNotification({
+          title: status === 'scheduled' ? 'New Prompt Scheduled' : 'New Prompt Created',
+          message:
+            status === 'scheduled'
+              ? `Prompt "${title.trim()}" is scheduled for auto-publishing.`
+              : `Prompt "${title.trim()}" was posted and published.`,
+          type: status === 'scheduled' ? 'schedule' : 'create',
+        })
         setTimeout(() => navigate('/'), 900)
       }
     } catch (err) {
@@ -573,6 +590,14 @@ export default function PromptEditor() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setPreviewOpen(true)}
+              className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-border bg-surface-muted px-4 py-2.5 text-xs font-bold text-mute transition-colors hover:bg-surface-subtle hover:text-ink"
+            >
+              <Eye size={15} />
+              Preview
+            </button>
             <Link
               to="/"
               className={`inline-flex items-center justify-center rounded-xl border border-border bg-surface-muted px-4 py-2.5 text-xs font-bold text-mute no-underline transition-colors hover:bg-surface-subtle hover:text-ink ${
@@ -593,6 +618,29 @@ export default function PromptEditor() {
           </div>
         </div>
       </div>
+
+      <PromptPreviewModal
+        prompt={{
+          title: title || 'Untitled Prompt',
+          slug: slug || 'untitled',
+          promptText,
+          tool: aiModel,
+          category,
+          tags: tags
+            .split(',')
+            .map((t) => t.trim())
+            .filter(Boolean),
+          trending,
+          status,
+          scheduledAt,
+          images: images
+            .filter((im) => im.src && !im.src.startsWith('blob:'))
+            .map(({ src, altText }) => ({ url: src, altText })),
+          excerpt: promptText.slice(0, 140),
+        }}
+        isOpen={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+      />
 
       <Toast toasts={toasts} />
     </div>

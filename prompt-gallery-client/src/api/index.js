@@ -114,8 +114,10 @@ export async function getPrompts({ sort = 'latest', filter = null, limit = null 
           p.category?.toLowerCase() === filterLower ||
           (p.tags || []).some((t) => t.toLowerCase() === filterLower),
       )
-      if (sort === 'trending' || sort === 'popular') {
-        result.sort((a, b) => b.likeCount - a.likeCount)
+      if (sort === 'trending') {
+        result.sort((a, b) => (b.trending ? 1 : 0) - (a.trending ? 1 : 0))
+      } else if (sort === 'popular') {
+        result.sort((a, b) => (Number(b.likeCount) || 0) - (Number(a.likeCount) || 0))
       }
       if (limit) result = result.slice(0, limit)
     }

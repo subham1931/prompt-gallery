@@ -112,7 +112,9 @@ router.get('/', optionalAuth, async (req, res) => {
 
     let query = Prompt.find(filter)
 
-    if (sort === 'trending' || sort === 'popular') {
+    if (sort === 'trending') {
+      query = query.sort({ trending: -1, createdAt: -1 })
+    } else if (sort === 'popular') {
       query = query.sort({ likeCount: -1, createdAt: -1 })
     } else {
       query = query.sort({ createdAt: -1 })

@@ -1,39 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { Bell, Check, CheckCheck, Clock, Sparkles, Trash2 } from 'lucide-react'
-
-const INITIAL_NOTIFICATIONS = [
-  {
-    id: 'n1',
-    title: 'Prompt Auto-Published',
-    message: 'Prompt "test-20" was published successfully by scheduler.',
-    time: '10m ago',
-    read: false,
-    type: 'publish',
-  },
-  {
-    id: 'n2',
-    title: 'Scheduled Publishing',
-    message: 'PEAKY BLINDER PIPELINE is queued for auto-publishing.',
-    time: '45m ago',
-    read: false,
-    type: 'schedule',
-  },
-  {
-    id: 'n3',
-    title: 'System Status',
-    message: 'Database backup completed. All systems running smoothly.',
-    time: '2h ago',
-    read: true,
-    type: 'system',
-  },
-]
+import { Bell, Check, CheckCheck, Clock, PlusCircle, Sparkles, Trash2 } from 'lucide-react'
+import { useNotifications } from '../context/NotificationContext'
 
 export function NotificationMenu() {
   const [open, setOpen] = useState(false)
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS)
+  const { notifications, unreadCount, markAllRead, markAsRead, clearAll } =
+    useNotifications()
   const containerRef = useRef(null)
-
-  const unreadCount = notifications.filter((n) => !n.read).length
 
   useEffect(() => {
     const onPointerDown = (e) => {
@@ -49,20 +22,6 @@ export function NotificationMenu() {
       document.removeEventListener('keydown', onKeyDown)
     }
   }, [])
-
-  const markAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
-  }
-
-  const markAsRead = (id) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    )
-  }
-
-  const clearAll = () => {
-    setNotifications([])
-  }
 
   return (
     <div className="relative" ref={containerRef}>
@@ -148,14 +107,18 @@ export function NotificationMenu() {
                   {/* Icon */}
                   <div
                     className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
-                      item.type === 'publish'
-                        ? 'bg-emerald-500/10 text-emerald-400'
-                        : item.type === 'schedule'
-                          ? 'bg-purple-500/10 text-purple-400'
-                          : 'bg-surface-muted text-mute'
+                      item.type === 'create'
+                        ? 'bg-orange/10 text-orange'
+                        : item.type === 'publish'
+                          ? 'bg-emerald-500/10 text-emerald-400'
+                          : item.type === 'schedule'
+                            ? 'bg-purple-500/10 text-purple-400'
+                            : 'bg-surface-muted text-mute'
                     }`}
                   >
-                    {item.type === 'publish' ? (
+                    {item.type === 'create' ? (
+                      <PlusCircle size={14} />
+                    ) : item.type === 'publish' ? (
                       <Sparkles size={14} />
                     ) : item.type === 'schedule' ? (
                       <Clock size={14} />

@@ -1,10 +1,11 @@
 import { Card } from './ui/Card'
 
-export function PromptTextCard({ value, onChange, error }) {
+export function PromptTextCard({ value = '', onChange, error }) {
+  const text = value || ''
   return (
     <Card title="Prompt" description="Copied when a user clicks Copy prompt.">
       <textarea
-        value={value}
+        value={text}
         onChange={(e) => onChange(e.target.value)}
         rows={7}
         placeholder="Paste or write the full prompt…"
@@ -21,7 +22,7 @@ export function PromptTextCard({ value, onChange, error }) {
         ) : (
           <span />
         )}
-        <div className="text-[11px] text-mute-light">{value.length} characters</div>
+        <div className="text-[11px] text-mute-light">{text.length} characters</div>
       </div>
     </Card>
   )

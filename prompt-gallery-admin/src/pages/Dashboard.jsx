@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, Check, Filter, Flame, Heart, ImageIcon, Plus, Search, Trash2, X } from 'lucide-react'
+import { Calendar, Check, Eye, Filter, Flame, Heart, ImageIcon, Plus, Search, Trash2, X } from 'lucide-react'
 import { AdminHeader } from '../components/AdminHeader'
 import { Badge } from '../components/ui/Badge'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
+import { PromptPreviewModal } from '../components/PromptPreviewModal'
 import { Toast } from '../components/ui/Toast'
 import { useToast } from '../hooks/useToast'
 import { useDebounce } from '../hooks/useDebounce'
@@ -83,6 +84,7 @@ export default function Dashboard() {
   const [filterOpen, setFilterOpen] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const [pendingDelete, setPendingDelete] = useState(null)
+  const [previewPrompt, setPreviewPrompt] = useState(null)
   const filterRef = useRef(null)
 
   useEffect(() => {
@@ -270,7 +272,7 @@ export default function Dashboard() {
           </div>
 
         <div className="overflow-hidden rounded-2xl border border-border bg-surface/90">
-          <div className="hidden grid-cols-[64px_1fr_95px_90px_85px_65px_60px_120px_90px] gap-3 border-b border-border bg-surface-muted/40 px-5 py-3.5 text-[11.5px] font-bold tracking-[0.05em] text-mute-light uppercase md:grid">
+          <div className="hidden grid-cols-[64px_1fr_95px_90px_85px_60px_50px_110px_90px] gap-3 border-b border-border bg-surface-muted/40 px-5 py-3.5 text-[11.5px] font-bold tracking-[0.05em] text-mute-light uppercase md:grid">
             <span>Image</span>
             <span>Title</span>
             <span>Trending</span>
@@ -322,7 +324,8 @@ export default function Dashboard() {
               return (
                 <div
                   key={row.id}
-                  className="grid grid-cols-[48px_1fr] items-center gap-3 border-b border-border/60 px-4 py-3 transition-colors hover:bg-surface-muted/30 last:border-b-0 sm:px-5 md:grid-cols-[64px_1fr_95px_90px_85px_65px_60px_120px_90px] md:gap-3"
+                  onClick={() => setPreviewPrompt(row)}
+                  className="grid grid-cols-[48px_1fr] items-center gap-3 border-b border-border/60 px-4 py-3 cursor-pointer transition-colors hover:bg-surface-muted/50 last:border-b-0 sm:px-5 md:grid-cols-[64px_1fr_95px_90px_85px_60px_50px_110px_90px] md:gap-3"
                 >
                   <div className="h-11 w-11 overflow-hidden rounded-xl border border-border/80 bg-surface-subtle sm:h-12 sm:w-12 md:h-[46px] md:w-[46px]">
                     {thumb ? (
@@ -360,13 +363,17 @@ export default function Dashboard() {
                     <div className="mt-2 flex gap-3 md:hidden">
                       <Link
                         to={`/prompts/${row.id}/edit`}
+                        onClick={(e) => e.stopPropagation()}
                         className="text-[13px] font-medium text-mute hover:text-orange transition-colors no-underline"
                       >
                         Edit
                       </Link>
                       <button
                         type="button"
-                        onClick={() => askDelete(row)}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          askDelete(row)
+                        }}
                         className="cursor-pointer border-none bg-transparent p-0 text-[13px] font-semibold text-mute hover:text-red transition-colors"
                       >
                         Delete
@@ -418,13 +425,17 @@ export default function Dashboard() {
                   <div className="hidden items-center justify-end gap-3.5 md:flex">
                     <Link
                       to={`/prompts/${row.id}/edit`}
+                      onClick={(e) => e.stopPropagation()}
                       className="text-[13px] font-medium text-mute hover:text-orange transition-colors no-underline"
                     >
                       Edit
                     </Link>
                     <button
                       type="button"
-                      onClick={() => askDelete(row)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        askDelete(row)
+                      }}
                       title="Delete prompt"
                       className="inline-flex cursor-pointer items-center gap-1 border-none bg-transparent p-0 text-[13px] font-semibold text-mute hover:text-red transition-colors"
                     >
@@ -448,6 +459,12 @@ export default function Dashboard() {
             loading={Boolean(deletingId)}
             onCancel={closeDeleteModal}
             onConfirm={confirmDelete}
+          />
+
+          <PromptPreviewModal
+            prompt={previewPrompt}
+            isOpen={Boolean(previewPrompt)}
+            onClose={() => setPreviewPrompt(null)}
           />
         </div>
       </div>
