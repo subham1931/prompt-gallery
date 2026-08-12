@@ -88,6 +88,32 @@ router.get('/me', requireAuth, async (req, res) => {
   res.json({ data: { user: req.user.toPublicJSON() } })
 })
 
+router.post('/verify-password', requireAuth, async (req, res) => {
+  try {
+    const { password } = req.body || {}
+    if (!password) {
+      res.status(400).json({ error: 'Current password is required' })
+      return
+    }
+
+    const user = await User.findById(req.user._id).select('+passwordHash')
+    if (!user) {
+      res.status(404).json({ error: 'User not found' })
+      return
+    }
+
+    const isMatch = await user.verifyPassword(password)
+    if (!isMatch) {
+      res.status(400).json({ error: 'Incorrect current password' })
+      return
+    }
+
+    res.json({ ok: true, message: 'Current password verified' })
+  } catch (err) {
+    res.status(500).json({ error: getErrorMessage(err, 'Verification failed') })
+  }
+})
+
 router.post('/change-password', requireAuth, async (req, res) => {
   try {
     const { oldPassword, newPassword, confirmPassword } = req.body || {}

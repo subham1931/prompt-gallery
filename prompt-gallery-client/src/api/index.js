@@ -84,6 +84,13 @@ export async function getMe(token) {
   return data.user
 }
 
+export async function verifyPassword(password) {
+  return request('/api/auth/verify-password', {
+    method: 'POST',
+    body: JSON.stringify({ password }),
+  })
+}
+
 export async function changePassword({ oldPassword, newPassword, confirmPassword }) {
   return request('/api/auth/change-password', {
     method: 'POST',
