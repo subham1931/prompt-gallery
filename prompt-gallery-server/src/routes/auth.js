@@ -88,4 +88,44 @@ router.get('/me', requireAuth, async (req, res) => {
   res.json({ data: { user: req.user.toPublicJSON() } })
 })
 
+router.post('/change-password', requireAuth, async (req, res) => {
+  try {
+    const { oldPassword, newPassword, confirmPassword } = req.body || {}
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      res.status(400).json({ error: 'All password fields are required' })
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      res.status(400).json({ error: 'New password and confirm password do not match' })
+      return
+    }
+
+    if (newPassword.length < 6) {
+      res.status(400).json({ error: 'New password must be at least 6 characters' })
+      return
+    }
+
+    const user = await User.findById(req.user._id).select('+passwordHash')
+    if (!user) {
+      res.status(404).json({ error: 'User not found' })
+      return
+    }
+
+    const isMatch = await user.verifyPassword(oldPassword)
+    if (!isMatch) {
+      res.status(400).json({ error: 'Incorrect current password' })
+      return
+    }
+
+    user.passwordHash = await User.hashPassword(newPassword)
+    await user.save()
+
+    res.json({ message: 'Password updated successfully' })
+  } catch (err) {
+    res.status(500).json({ error: getErrorMessage(err, 'Failed to update password') })
+  }
+})
+
 export default router

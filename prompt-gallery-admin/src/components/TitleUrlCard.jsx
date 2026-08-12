@@ -102,9 +102,9 @@ export function TitleUrlCard({
 
       <Field
         label="AI model"
-        hint="Rank one model per page — pages that mix models rarely rank for either search."
+        hint="Select one or multiple AI models compatible with this prompt."
       >
-        <Pills value={aiModel} onChange={setAiModel} options={AI_MODELS} />
+        <Pills value={aiModel} onChange={setAiModel} options={AI_MODELS} multiple={true} />
       </Field>
 
       <Field

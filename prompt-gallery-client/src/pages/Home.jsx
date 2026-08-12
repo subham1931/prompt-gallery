@@ -6,6 +6,7 @@ import { getPrompts, searchPrompts } from '../api'
 import PromptMasonryGrid from '../components/PromptMasonryGrid'
 import Tabs from '../components/Tabs'
 import BrowseByStyle from '../components/BrowseByStyle'
+import FAQSection from '../components/FAQSection'
 import PageTransition from '../components/PageTransition'
 
 const TABS = [
@@ -14,7 +15,7 @@ const TABS = [
   { id: 'popular', label: 'Popular' },
 ]
 
-const PAGE_SIZE = 12
+const PAGE_SIZE = 8
 
 export default function Home() {
   const [searchParams] = useSearchParams()
@@ -140,6 +141,7 @@ export default function Home() {
         </section>
 
         <BrowseByStyle />
+        <FAQSection />
       </div>
     </PageTransition>
   )

@@ -98,7 +98,15 @@ export function PromptPreviewModal({ prompt, isOpen, onClose }) {
 
               {/* Badges Overlay */}
               <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                <Badge tone="default">{prompt.tool || 'ChatGPT'}</Badge>
+                {String(prompt.tool || 'ChatGPT')
+                  .split(',')
+                  .map((m) => m.trim())
+                  .filter(Boolean)
+                  .map((m) => (
+                    <Badge key={m} tone="default">
+                      {m}
+                    </Badge>
+                  ))}
                 {prompt.trending && <Badge tone="orange">Trending</Badge>}
               </div>
 

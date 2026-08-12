@@ -84,6 +84,13 @@ export async function getMe(token) {
   return data.user
 }
 
+export async function changePassword({ oldPassword, newPassword, confirmPassword }) {
+  return request('/api/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify({ oldPassword, newPassword, confirmPassword }),
+  })
+}
+
 export async function togglePromptLike(promptId) {
   const { data } = await request(`/api/prompts/${encodeURIComponent(promptId)}/like`, {
     method: 'POST',
