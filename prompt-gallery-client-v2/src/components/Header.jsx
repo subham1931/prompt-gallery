@@ -102,15 +102,15 @@ export default function Header() {
     .toUpperCase()
 
   return (
-    <header className="sticky top-0 z-50 px-4 py-3 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-2xl bg-transparent px-5 sm:px-7 py-3 transition-all duration-300">
+    <header className="sticky top-0 z-50 px-2 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-4 rounded-2xl bg-transparent px-3 sm:px-7 py-2.5 sm:py-3 transition-all duration-300">
         {/* Brand Logo */}
-        <Link to="/" className="group flex shrink-0 items-center gap-3">
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 transition-transform duration-300 group-hover:scale-105 shadow-md">
-            <Sparkles size={18} className="text-orange-500 dark:text-orange-500 animate-pulse" />
+        <Link to="/" className="group flex shrink-0 items-center gap-2 sm:gap-3">
+          <div className="relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 transition-transform duration-300 group-hover:scale-105 shadow-md">
+            <Sparkles size={16} className="text-orange-500 dark:text-orange-500 animate-pulse" />
           </div>
           <div className="flex flex-col">
-            <span className="font-display text-base font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-lg">
+            <span className="font-display text-sm font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-lg">
               prompt<span className="text-orange-500 dark:text-orange-400">-gallery</span>
             </span>
             <span className="hidden text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 sm:inline">
@@ -120,12 +120,12 @@ export default function Header() {
         </Link>
 
         {/* Actions & Search */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           {/* Quick Search */}
           <div ref={searchRef} className="flex justify-end">
             <div
               className={`flex items-center transition-all duration-300 ease-out ${
-                searchOpen ? 'w-48 sm:w-64 lg:w-80' : 'w-9'
+                searchOpen ? 'w-36 xs:w-44 sm:w-64 lg:w-80' : 'w-9'
               }`}
             >
               {searchOpen ? (

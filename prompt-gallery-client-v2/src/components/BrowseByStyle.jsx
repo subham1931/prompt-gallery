@@ -28,8 +28,8 @@ export default function BrowseByStyle() {
   }, [])
 
   return (
-    <section className="relative py-16 lg:py-24 border-t border-slate-200/60 dark:border-slate-800/80">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="relative py-10 sm:py-16 lg:py-24 border-t border-slate-200/60 dark:border-slate-800/80">
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
