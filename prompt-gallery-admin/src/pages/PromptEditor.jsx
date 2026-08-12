@@ -32,7 +32,7 @@ function createImage(overrides = {}) {
   }
 }
 
-function validateForm({ title, slug, promptText, category, images }) {
+function validateForm({ title, slug, promptText, category, images, status, scheduledAt }) {
   const errors = {}
 
   if (!title.trim()) errors.title = 'Title is required'
@@ -49,6 +49,14 @@ function validateForm({ title, slug, promptText, category, images }) {
   }
 
   if (!category) errors.category = 'Category is required'
+
+  if (status === 'scheduled') {
+    if (!scheduledAt) {
+      errors.scheduledAt = 'Select a date and time to schedule publishing'
+    } else if (new Date(scheduledAt).getTime() <= Date.now()) {
+      errors.scheduledAt = 'Schedule date & time must be in the future'
+    }
+  }
 
   const hasImage = images.some((im) => im.src && !im.src.startsWith('blob:') && !im.uploading)
   if (!hasImage) errors.images = 'Add at least one uploaded image'
@@ -69,6 +77,14 @@ function mapApiErrorToFields(message = '') {
   else if (lower.includes('category')) errors.category = message
   else if (lower.includes('image') || lower.includes('upload')) errors.images = message
   return { errors, general: Object.keys(errors).length ? null : message }
+}
+
+function toDatetimeLocal(isoString) {
+  if (!isoString) return ''
+  const d = new Date(isoString)
+  if (isNaN(d.getTime())) return ''
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
 export default function PromptEditor() {
@@ -92,6 +108,7 @@ export default function PromptEditor() {
   const [tags, setTags] = useState('')
   const [trending, setTrending] = useState(false)
   const [status, setStatus] = useState('published')
+  const [scheduledAt, setScheduledAt] = useState('')
 
   const [metaTitle, setMetaTitle] = useState('')
   const [metaDesc, setMetaDesc] = useState('')
@@ -150,6 +167,7 @@ export default function PromptEditor() {
         setTags((data.tags || []).join(', '))
         setTrending(Boolean(data.trending))
         setStatus(data.status || 'published')
+        setScheduledAt(toDatetimeLocal(data.scheduledAt))
         setMetaTitle(data.metaTitle || '')
         setMetaDesc(data.metaDesc || '')
         setFocusKeyword(data.focusKeyword || '')
@@ -321,7 +339,7 @@ export default function PromptEditor() {
   }
 
   const handleSave = async () => {
-    const fieldErrors = validateForm({ title, slug, promptText, category, images })
+    const fieldErrors = validateForm({ title, slug, promptText, category, images, status, scheduledAt })
     if (Object.keys(fieldErrors).length) {
       setErrors(fieldErrors)
       pushToast('Fix the highlighted fields', 'error')
@@ -342,6 +360,7 @@ export default function PromptEditor() {
         .filter(Boolean),
       trending,
       status,
+      scheduledAt: status === 'scheduled' && scheduledAt ? new Date(scheduledAt).toISOString() : null,
       metaTitle,
       metaDesc,
       focusKeyword,
@@ -479,6 +498,11 @@ export default function PromptEditor() {
                 setTrending={setTrending}
                 status={status}
                 setStatus={setStatus}
+                scheduledAt={scheduledAt}
+                setScheduledAt={(v) => {
+                  clearFieldError('scheduledAt')
+                  setScheduledAt(v)
+                }}
                 errors={errors}
                 categories={categoryOptions}
               />

@@ -3,6 +3,7 @@ import { Field } from './ui/Field'
 import { TextInput } from './ui/TextInput'
 import { Pills } from './ui/Pills'
 import { Toggle } from './ui/Toggle'
+import { DateTimePicker } from './ui/DateTimePicker'
 import { AI_MODELS, CATEGORIES } from '../utils/seo'
 
 export function TitleUrlCard({
@@ -21,6 +22,8 @@ export function TitleUrlCard({
   setTrending,
   status = 'published',
   setStatus,
+  scheduledAt = '',
+  setScheduledAt,
   errors = {},
   categories = CATEGORIES,
 }) {
@@ -28,12 +31,34 @@ export function TitleUrlCard({
   return (
     <Card title="Details" description="Title, URL, model, and gallery metadata.">
       {setStatus && (
-        <Field label="Status">
-          <Pills
-            value={status === 'draft' ? 'Draft' : 'Published'}
-            onChange={(v) => setStatus(v === 'Draft' ? 'draft' : 'published')}
-            options={['Published', 'Draft']}
-          />
+        <Field
+          label="Status"
+          hint={
+            status === 'scheduled'
+              ? 'This prompt will automatically publish at the scheduled date & time.'
+              : undefined
+          }
+          error={errors.scheduledAt}
+        >
+          <div className="flex flex-col gap-3">
+            <Pills
+              value={status === 'draft' ? 'Draft' : status === 'scheduled' ? 'Scheduled' : 'Published'}
+              onChange={(v) => {
+                if (v === 'Draft') setStatus('draft')
+                else if (v === 'Scheduled') setStatus('scheduled')
+                else setStatus('published')
+              }}
+              options={['Published', 'Draft', 'Scheduled']}
+            />
+
+            {status === 'scheduled' && setScheduledAt && (
+              <DateTimePicker
+                value={scheduledAt}
+                onChange={setScheduledAt}
+                error={Boolean(errors.scheduledAt)}
+              />
+            )}
+          </div>
         </Field>
       )}
 

@@ -60,6 +60,14 @@ async function start() {
     console.warn('Category seed skipped:', err.message)
   }
 
+  // Start scheduled prompt publisher
+  try {
+    const { startPublishingScheduler } = await import('./utils/scheduler.js')
+    startPublishingScheduler()
+  } catch (err) {
+    console.warn('Publishing scheduler failed to start:', err.message)
+  }
+
   app.listen(PORT, () => {
     console.log(`API listening on :${PORT}`)
   })

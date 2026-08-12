@@ -33,6 +33,10 @@ function normalizeBody(body = {}) {
     publicId: img.publicId || '',
   })).filter((img) => img.url)
 
+  const validStatuses = ['draft', 'published', 'scheduled']
+  const status = validStatuses.includes(body.status) ? body.status : 'published'
+  const scheduledAt = status === 'scheduled' && body.scheduledAt ? new Date(body.scheduledAt) : null
+
   return {
     title: body.title,
     slug: body.slug ? slugify(body.slug) : slugify(body.title),
@@ -45,7 +49,8 @@ function normalizeBody(body = {}) {
     trending: Boolean(body.trending),
     likeCount: typeof body.likeCount === 'number' ? body.likeCount : undefined,
     aspect: body.aspect || 'portrait',
-    status: body.status === 'draft' ? 'draft' : 'published',
+    status,
+    scheduledAt,
     images,
     metaTitle: body.metaTitle || '',
     metaDesc: body.metaDesc || '',
@@ -73,7 +78,7 @@ router.get('/', optionalAuth, async (req, res) => {
       page = '1',
     } = req.query
 
-    const wantsNonPublic = status === 'all' || status === 'draft'
+    const wantsNonPublic = status === 'all' || status === 'draft' || status === 'scheduled'
     if (wantsNonPublic && !isStaff(req.user)) {
       res.status(403).json({ error: 'Admin access required' })
       return
@@ -81,10 +86,10 @@ router.get('/', optionalAuth, async (req, res) => {
 
     const filter = {}
 
-    // Public default: published only. Admin can pass status=all or status=draft
+    // Public default: published only. Admin can pass status=all, draft, scheduled, or published
     if (status === 'all') {
       // no status filter
-    } else if (status === 'draft' || status === 'published') {
+    } else if (['draft', 'published', 'scheduled'].includes(status)) {
       filter.status = status
     } else {
       filter.status = 'published'

@@ -13,6 +13,7 @@ import { computeSeoScore } from '../utils/seo'
 const FILTER_OPTIONS = [
   { id: 'latest', label: 'Latest' },
   { id: 'trending', label: 'Trending' },
+  { id: 'scheduled', label: 'Scheduled' },
   { id: 'popular', label: 'Popular' },
 ]
 
@@ -56,6 +57,7 @@ function formatRelativeDate(dateInput) {
 function matchesFilter(row, id) {
   if (id === 'trending') return Boolean(row.trending)
   if (id === 'popular') return Number(row.likeCount) > 0
+  if (id === 'scheduled') return row.status === 'scheduled'
   if (id === 'latest') return true
   return false
 }
@@ -312,7 +314,8 @@ export default function Dashboard() {
                   BlogPosting: false,
                 },
               })
-              const isPublished = row.status !== 'draft'
+              const isScheduled = row.status === 'scheduled'
+              const isPublished = row.status === 'published'
               const thumb = row.image || row.images?.[0]?.url || ''
               const likes = Number(row.likeCount) || 0
 
@@ -340,8 +343,8 @@ export default function Dashboard() {
                     <div className="truncate text-xs text-mute-light">/prompts/{row.slug}</div>
                     <div className="mt-2 flex flex-wrap items-center gap-2 md:hidden">
                       {row.trending && <Badge tone="orange">Trending</Badge>}
-                      <Badge tone={isPublished ? 'green' : 'default'}>
-                        {isPublished ? 'Published' : 'Draft'}
+                      <Badge tone={isScheduled ? 'orange' : isPublished ? 'green' : 'default'}>
+                        {isScheduled ? 'Scheduled' : isPublished ? 'Published' : 'Draft'}
                       </Badge>
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-mute">
                         <Heart size={12} className="text-orange" />
@@ -380,10 +383,20 @@ export default function Dashboard() {
                   </div>
                   <div className="hidden text-[13px] font-medium text-mute md:block">{row.tool}</div>
                   <div className="hidden md:block">
-                    <span className={`inline-flex items-center gap-1.5 text-[12.5px] font-semibold ${isPublished ? 'text-emerald-400' : 'text-mute-light'}`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${isPublished ? 'bg-emerald-400' : 'bg-mute-light'}`} />
-                      {isPublished ? 'Published' : 'Draft'}
-                    </span>
+                    {isScheduled ? (
+                      <span
+                        className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-purple-400"
+                        title={row.scheduledAt ? `Scheduled for ${new Date(row.scheduledAt).toLocaleString()}` : 'Scheduled'}
+                      >
+                        <span className="h-1.5 w-1.5 rounded-full bg-purple-400 animate-pulse" />
+                        Scheduled
+                      </span>
+                    ) : (
+                      <span className={`inline-flex items-center gap-1.5 text-[12.5px] font-semibold ${isPublished ? 'text-emerald-400' : 'text-mute-light'}`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${isPublished ? 'bg-emerald-400' : 'bg-mute-light'}`} />
+                        {isPublished ? 'Published' : 'Draft'}
+                      </span>
+                    )}
                   </div>
                   <div className="hidden md:block">
                     <span className="inline-flex items-center gap-1 text-[13px] font-medium text-ink">
