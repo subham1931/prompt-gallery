@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { useSearchParams, useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Sparkles, ArrowDown } from 'lucide-react'
 import { getPrompts, searchPrompts } from '../api'
 import HeroSection from '../components/HeroSection'
@@ -19,15 +19,23 @@ const TABS = [
 const PAGE_SIZE = 8
 
 export default function Home() {
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('q') || ''
+  const sortParam = searchParams.get('sort') || 'latest'
 
   const [allPrompts, setAllPrompts] = useState([])
-  const [activeTab, setActiveTab] = useState('latest')
+  const [activeTab, setActiveTab] = useState(sortParam)
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setActiveTab(sortParam)
+  }, [sortParam])
 
   useEffect(() => {
     let cancelled = false
+    setLoading(true)
     const load = searchQuery.trim()
       ? searchPrompts(searchQuery)
       : getPrompts({ sort: activeTab })
@@ -42,6 +50,9 @@ export default function Home() {
       .catch(() => {
         if (!cancelled) setAllPrompts([])
       })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
 
     return () => {
       cancelled = true
@@ -54,6 +65,13 @@ export default function Home() {
   const handleTabChange = (tab) => {
     setActiveTab(tab)
     setVisibleCount(PAGE_SIZE)
+    const params = new URLSearchParams(searchParams)
+    if (tab === 'latest') {
+      params.delete('sort')
+    } else {
+      params.set('sort', tab)
+    }
+    navigate({ search: params.toString() }, { replace: true })
   }
 
   return (
@@ -78,14 +96,29 @@ export default function Home() {
 
           <Tabs tabs={TABS} activeTab={activeTab} onChange={handleTabChange} />
 
-          <div className="mt-8">
-            {visiblePrompts.length > 0 ? (
-              <PromptMasonryGrid prompts={visiblePrompts} />
-            ) : (
-              <div className="py-20 text-center text-slate-400 font-medium">
-                No prompts found for "{searchQuery}". Try another keyword or reset search.
-              </div>
-            )}
+          <div className="mt-8 min-h-[400px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab + searchQuery}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.35, ease: 'easeInOut' }}
+              >
+                {loading ? (
+                  <div className="py-20 text-center text-orange-500 font-bold animate-pulse">
+                    <Sparkles className="inline-block mr-2" size={18} />
+                    Loading {activeTab} prompt collection...
+                  </div>
+                ) : visiblePrompts.length > 0 ? (
+                  <PromptMasonryGrid prompts={visiblePrompts} />
+                ) : (
+                  <div className="py-20 text-center text-slate-400 font-medium">
+                    No prompts found for "{searchQuery}". Try another keyword or reset search.
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
 
           {hasMore && (

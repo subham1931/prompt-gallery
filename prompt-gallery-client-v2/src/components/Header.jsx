@@ -16,9 +16,38 @@ export default function Header() {
   const [query, setQuery] = useState(urlQuery)
   const debouncedQuery = useDebounce(query, 300)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [visible, setVisible] = useState(true)
+
   const inputRef = useRef(null)
   const searchRef = useRef(null)
   const menuRef = useRef(null)
+  const lastScrollY = useRef(0)
+
+  // Scroll direction and scroll distance handler
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      setScrolled(currentScrollY > 20)
+
+      if (currentScrollY > 120) {
+        if (currentScrollY > lastScrollY.current + 8) {
+          // Hide navbar when scrolling down fast
+          setVisible(false)
+        } else if (currentScrollY < lastScrollY.current - 8) {
+          // Reveal floating navbar immediately when scrolling up
+          setVisible(true)
+        }
+      } else {
+        setVisible(true)
+      }
+
+      lastScrollY.current = currentScrollY
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     setQuery(urlQuery)
@@ -102,8 +131,18 @@ export default function Header() {
     .toUpperCase()
 
   return (
-    <header className="sticky top-0 z-50 px-2 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-4 rounded-2xl bg-transparent px-3 sm:px-7 py-2.5 sm:py-3 transition-all duration-300">
+    <header
+      className={`fixed top-3 sm:top-4 left-0 right-0 z-50 px-3 sm:px-6 pointer-events-none transition-all duration-500 ease-out ${
+        visible ? 'translate-y-0 opacity-100' : '-translate-y-24 opacity-0'
+      }`}
+    >
+      <div
+        className={`pointer-events-auto mx-auto flex max-w-4xl items-center justify-between gap-2 sm:gap-4 rounded-full transition-all duration-500 ${
+          scrolled
+            ? 'bg-white/85 dark:bg-slate-950/85 backdrop-blur-2xl border border-white/80 dark:border-slate-800/80 shadow-2xl px-4 sm:px-6 py-1.5 sm:py-2 scale-[0.98]'
+            : 'bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/70 dark:border-slate-800/70 shadow-xl px-4 sm:px-6 py-2.5 sm:py-3 scale-100'
+        }`}
+      >
         {/* Brand Logo */}
         <Link to="/" className="group flex shrink-0 items-center gap-2 sm:gap-3">
           <div className="relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 transition-transform duration-300 group-hover:scale-105 shadow-md">

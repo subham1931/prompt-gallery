@@ -132,7 +132,9 @@ export async function getPrompts({ sort = 'latest', filter = null, limit = null 
     if (sort === 'popular') {
       pool.sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
     } else if (sort === 'trending') {
-      pool.sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
+      pool.sort((a, b) => ((b.likeCount || 0) + (b.id * 50)) % 73 - ((a.likeCount || 0) + (a.id * 50)) % 73)
+    } else {
+      pool.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
     }
     result = pool
   }
