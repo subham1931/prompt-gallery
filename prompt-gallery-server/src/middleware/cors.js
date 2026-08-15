@@ -7,9 +7,9 @@ function parseOrigins(...values) {
     .filter(Boolean)
 }
 
-/** Vercel production + preview URLs for this project's apps */
+/** Vercel production + preview URLs for all project apps */
 function isVercelAppOrigin(origin) {
-  return /^https:\/\/prompt-gallery-(admin|client)[\w-]*\.vercel\.app$/i.test(origin)
+  return /^https:\/\/[\w-]*\.vercel\.app$/i.test(origin)
 }
 
 export function createCorsMiddleware() {
@@ -19,6 +19,7 @@ export function createCorsMiddleware() {
       process.env.ADMIN_ORIGIN,
       'http://localhost:5173',
       'http://localhost:5174',
+      'http://localhost:3000',
     ),
   )
 
@@ -33,5 +34,6 @@ export function createCorsMiddleware() {
       callback(new Error(`CORS blocked for origin: ${origin}`))
     },
     credentials: true,
+    optionsSuccessStatus: 200,
   })
 }
