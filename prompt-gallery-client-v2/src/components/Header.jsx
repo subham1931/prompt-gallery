@@ -10,7 +10,7 @@ export default function Header() {
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const urlQuery = searchParams.get('q') || ''
-  const { user, isAuthenticated, signOut } = useAuth()
+  const { user, isAuthenticated, signOut, openAuth } = useAuth()
 
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState(urlQuery)
@@ -254,12 +254,13 @@ export default function Header() {
               )}
             </div>
           ) : (
-            <Link
-              to="/signin"
-              className="inline-flex h-9 items-center rounded-xl px-4 text-xs font-extrabold uppercase tracking-wider text-slate-700 hover:bg-slate-900/5 dark:text-slate-200 dark:hover:bg-white/10 transition-all"
+            <button
+              type="button"
+              onClick={() => openAuth('signin')}
+              className="inline-flex h-9 items-center rounded-xl px-4 text-xs font-extrabold uppercase tracking-wider text-slate-700 hover:bg-slate-900/5 dark:text-slate-200 dark:hover:bg-white/10 transition-all cursor-pointer border-none bg-transparent"
             >
               Log In
-            </Link>
+            </button>
           )}
         </div>
       </div>

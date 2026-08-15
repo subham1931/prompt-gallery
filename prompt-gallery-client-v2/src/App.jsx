@@ -15,9 +15,12 @@ import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsOfService from './pages/TermsOfService'
 import Profile from './pages/Profile'
 import { SignIn, SignUp } from './pages/AuthPages'
+import AuthModal from './components/AuthModal'
+import { useAuth } from './context/AuthContext'
 
 function Layout() {
   const location = useLocation()
+  const { isAuthModalOpen, closeAuth, authModalMode } = useAuth()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -51,6 +54,7 @@ function Layout() {
           </AnimatePresence>
         </main>
         <Footer />
+        <AuthModal isOpen={isAuthModalOpen} onClose={closeAuth} mode={authModalMode} />
       </div>
     </div>
   )

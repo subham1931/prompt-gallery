@@ -17,6 +17,8 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => getStoredToken())
   const [booting, setBooting] = useState(true)
   const [pendingAction, setPendingAction] = useState(null)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState('signin')
 
   useEffect(() => {
     let cancelled = false
@@ -144,7 +146,7 @@ export function AuthProvider({ children }) {
       signOut,
       updateUser,
     }),
-    [booting, openAuth, requireAuth, signIn, signOut, signUp, token, updateUser, user],
+    [booting, openAuth, closeAuth, isAuthModalOpen, authModalMode, requireAuth, signIn, signOut, signUp, token, updateUser, user],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
