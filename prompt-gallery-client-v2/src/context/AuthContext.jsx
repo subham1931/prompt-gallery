@@ -57,17 +57,15 @@ export function AuthProvider({ children }) {
   const openAuth = useCallback(
     (mode = 'signin', action = null) => {
       setPendingAction(() => action)
-      const next = `${location.pathname}${location.search}`
-      const params = new URLSearchParams()
-      if (next && next !== '/signin' && next !== '/signup') {
-        params.set('next', next)
-      }
-      const path = mode === 'signup' ? '/signup' : '/signin'
-      const search = params.toString()
-      navigate(search ? `${path}?${search}` : path)
+      setAuthModalMode(mode)
+      setIsAuthModalOpen(true)
     },
-    [location.pathname, location.search, navigate],
+    [],
   )
+
+  const closeAuth = useCallback(() => {
+    setIsAuthModalOpen(false)
+  }, [])
 
   const requireAuth = useCallback(
     (action) => {
@@ -87,25 +85,20 @@ export function AuthProvider({ children }) {
     setUser(nextUser)
   }, [])
 
-  const finishAuth = useCallback(
-    (nextPath) => {
-      const action = pendingAction
-      setPendingAction(null)
-      const target =
-        nextPath && nextPath.startsWith('/') && !nextPath.startsWith('//') ? nextPath : '/'
-      navigate(target, { replace: true })
-      if (typeof action === 'function') {
-        queueMicrotask(() => action())
-      }
-    },
-    [navigate, pendingAction],
-  )
+  const finishAuth = useCallback(() => {
+    const action = pendingAction
+    setPendingAction(null)
+    setIsAuthModalOpen(false)
+    if (typeof action === 'function') {
+      queueMicrotask(() => action())
+    }
+  }, [pendingAction])
 
   const signIn = useCallback(
     async ({ email, password }, nextPath) => {
       const data = await apiLogin({ email, password })
       applySession(data.user, data.token)
-      finishAuth(nextPath)
+      finishAuth()
       return data.user
     },
     [applySession, finishAuth],
@@ -115,7 +108,7 @@ export function AuthProvider({ children }) {
     async ({ name, email, password }, nextPath) => {
       const data = await apiSignup({ name, email, password })
       applySession(data.user, data.token)
-      finishAuth(nextPath)
+      finishAuth()
       return data.user
     },
     [applySession, finishAuth],
@@ -139,14 +132,30 @@ export function AuthProvider({ children }) {
       token,
       booting,
       isAuthenticated: Boolean(user),
+      isAuthModalOpen,
+      authModalMode,
       openAuth,
+      closeAuth,
       requireAuth,
       signIn,
       signUp,
       signOut,
       updateUser,
     }),
-    [booting, openAuth, closeAuth, isAuthModalOpen, authModalMode, requireAuth, signIn, signOut, signUp, token, updateUser, user],
+    [
+      booting,
+      isAuthModalOpen,
+      authModalMode,
+      openAuth,
+      closeAuth,
+      requireAuth,
+      signIn,
+      signOut,
+      signUp,
+      token,
+      updateUser,
+      user,
+    ],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
