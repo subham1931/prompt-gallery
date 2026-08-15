@@ -47,7 +47,7 @@ export default function Header() {
 
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [location.pathname])
 
   useEffect(() => {
     setQuery(urlQuery)
@@ -137,7 +137,7 @@ export default function Header() {
       }`}
     >
       <div
-        className={`pointer-events-auto mx-auto flex max-w-4xl items-center justify-between gap-2 sm:gap-4 rounded-full transition-all duration-500 ${
+        className={`pointer-events-auto mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-4 rounded-full transition-all duration-500 ${
           scrolled
             ? 'bg-white/85 dark:bg-slate-950/85 backdrop-blur-2xl border border-white/80 dark:border-slate-800/80 shadow-2xl px-4 sm:px-6 py-1.5 sm:py-2 scale-[0.98]'
             : 'bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/70 dark:border-slate-800/70 shadow-xl px-4 sm:px-6 py-2.5 sm:py-3 scale-100'
