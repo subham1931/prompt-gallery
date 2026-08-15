@@ -33,7 +33,7 @@ function Layout() {
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <Header />
-        <main className="flex-1">
+        <main className="flex-1 pt-20 sm:pt-24">
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={<Home />} />
