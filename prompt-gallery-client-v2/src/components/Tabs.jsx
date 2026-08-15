@@ -25,8 +25,8 @@ export default function Tabs({ tabs, activeTab, onChange }) {
       <div
         className={`pointer-events-auto inline-flex max-w-full items-center gap-1 sm:gap-2 rounded-full p-1.5 transition-all duration-500 ${
           isSticky
-            ? 'bg-[#090d16]/95 dark:bg-[#090d16]/95 backdrop-blur-2xl border border-orange-500/30 shadow-[0_12px_40px_rgba(0,0,0,0.7)] scale-[1.02]'
-            : 'bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 shadow-xl scale-100'
+            ? 'bg-white/90 dark:bg-[#090d16]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-orange-500/40 shadow-xl dark:shadow-[0_12px_40px_rgba(0,0,0,0.7)] scale-[1.02]'
+            : 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/80 shadow-xl scale-100'
         } overflow-x-auto scrollbar-hide`}
       >
         {tabs.map((tab) => {
@@ -40,21 +40,21 @@ export default function Tabs({ tabs, activeTab, onChange }) {
               onClick={() => onChange(tab.id)}
               className={`relative flex items-center gap-2 shrink-0 rounded-full px-5 sm:px-7 py-2.5 sm:py-3 text-xs font-extrabold uppercase tracking-widest transition-all duration-300 cursor-pointer ${
                 isActive
-                  ? 'text-white shadow-lg'
-                  : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-900/5 dark:hover:bg-white/5'
+                  ? 'text-white shadow-md'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-900/5 dark:hover:bg-white/5'
               }`}
             >
               {isActive && (
                 <motion.span
                   layoutId="active-tab-pill"
-                  className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 shadow-md shadow-orange-500/40"
+                  className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 shadow-md shadow-orange-500/30"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
               <Icon
                 size={15}
                 className={`relative z-10 ${
-                  isActive ? 'text-white' : 'text-slate-400'
+                  isActive ? 'text-white' : 'text-slate-400 dark:text-slate-400'
                 }`}
               />
               <span className="relative z-10">{tab.label}</span>

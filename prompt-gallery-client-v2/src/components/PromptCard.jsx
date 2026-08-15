@@ -101,7 +101,7 @@ export default function PromptCard({
       transition={{ duration: 0.4, delay: Math.min(index * 0.04, 0.4), ease: 'easeOut' }}
       className="w-full"
     >
-      <div className="glass-card group relative overflow-hidden rounded-3xl border border-white/80 dark:border-slate-800 transition-all duration-300">
+      <div className="glass-card group relative overflow-hidden rounded-3xl border border-slate-200/90 dark:border-slate-800/80 transition-all duration-300 isolation-auto bg-white/90 dark:bg-slate-900/90">
         <div className={`relative w-full ${ratioClass} overflow-hidden`}>
           <img
             src={image}

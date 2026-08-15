@@ -124,9 +124,9 @@ export default function HeroSection() {
                     <div
                       key={item.id}
                       onClick={() => setActiveIndex(index)}
-                      className={`absolute w-full max-w-[310px] xs:max-w-xs sm:max-w-md transition-all duration-500 ease-out cursor-pointer transform-style-3d ${transformClass}`}
+                      className={`absolute w-full max-w-[310px] xs:max-w-xs sm:max-w-md transition-all duration-500 ease-out cursor-pointer rounded-3xl overflow-hidden isolation-auto ${transformClass}`}
                     >
-                      <div className="glass-card rounded-3xl overflow-hidden border border-white/80 dark:border-slate-800 p-3.5 sm:p-5 space-y-3 sm:space-y-3.5 shadow-2xl">
+                      <div className="glass-card rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-800/90 p-3.5 sm:p-5 space-y-3 sm:space-y-3.5 shadow-2xl backdrop-blur-2xl bg-white/95 dark:bg-[#090d16]/95">
                         
                         {/* Header Badge */}
                         <div className="flex items-center justify-between">
