@@ -53,6 +53,14 @@ export default function HeroSection() {
     setTimeout(() => setCopiedId(null), 2000)
   }
 
+  const handleExploreClick = (e) => {
+    e.preventDefault()
+    const target = document.getElementById('gallery-grid')
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
   return (
     <section className="relative overflow-hidden pt-8 sm:pt-2 md:pt-8 lg:pt-10 pb-12 md:pb-20">
       <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
@@ -75,13 +83,14 @@ export default function HeroSection() {
 
             {/* CTAs */}
             <div className="mt-6 sm:mt-8 flex w-full flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <a
-                href="#gallery-grid"
-                className="inline-flex justify-center items-center gap-2 rounded-full bg-slate-900 px-6 sm:px-7 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-xl shadow-slate-900/10 hover:bg-slate-800 dark:bg-orange-500 dark:text-white dark:hover:bg-orange-600 transition-all hover:-translate-y-0.5 active:translate-y-0"
+              <button
+                type="button"
+                onClick={handleExploreClick}
+                className="inline-flex justify-center items-center gap-2 rounded-full bg-slate-900 px-6 sm:px-7 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-xl shadow-slate-900/10 hover:bg-slate-800 dark:bg-orange-500 dark:text-white dark:hover:bg-orange-600 transition-all hover:-translate-y-0.5 active:translate-y-0 cursor-pointer border-none"
               >
                 <span>Explore Prompts</span>
                 <ArrowRight size={15} />
-              </a>
+              </button>
 
               <Link
                 to="/libraries"
