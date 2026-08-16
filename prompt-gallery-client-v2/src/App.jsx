@@ -28,14 +28,33 @@ function Layout() {
   }, [location.pathname])
 
   useEffect(() => {
-    const cached = localStorage.getItem('pg_theme_accent') || 'orange'
-    document.documentElement.setAttribute('data-accent', cached)
-    getThemeAccent().then((accent) => {
+    const applyAccent = (accent) => {
       if (accent) {
         document.documentElement.setAttribute('data-accent', accent)
         localStorage.setItem('pg_theme_accent', accent)
       }
-    })
+    }
+
+    const cached = localStorage.getItem('pg_theme_accent') || 'orange'
+    applyAccent(cached)
+
+    getThemeAccent().then(applyAccent)
+
+    const interval = setInterval(() => {
+      getThemeAccent().then(applyAccent)
+    }, 3000)
+
+    const handleStorage = (e) => {
+      if (e.key === 'pg_theme_accent' && e.newValue) {
+        applyAccent(e.newValue)
+      }
+    }
+    window.addEventListener('storage', handleStorage)
+
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('storage', handleStorage)
+    }
   }, [])
 
   return (

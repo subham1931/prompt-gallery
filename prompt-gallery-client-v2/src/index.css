@@ -224,112 +224,41 @@ body {
   margin-bottom: 24px;
 }
 
-/* Dynamic Theme Accent Overrides */
+/* Dynamic Theme Accent Overrides (Tailwind v4 Color Variables) */
 [data-accent="green"] {
   --color-brand: #22c55e;
   --color-brand-hover: #16a34a;
-}
-[data-accent="green"] .bg-orange-500,
-[data-accent="green"] .dark\:bg-orange-500 {
-  background-color: #22c55e !important;
-}
-[data-accent="green"] .hover\:bg-orange-600:hover,
-[data-accent="green"] .dark\:hover\:bg-orange-600:hover {
-  background-color: #16a34a !important;
-}
-[data-accent="green"] .text-orange-500,
-[data-accent="green"] .text-orange-600,
-[data-accent="green"] .text-orange-400,
-[data-accent="green"] .dark\:text-orange-400,
-[data-accent="green"] .dark\:text-orange-500 {
-  color: #22c55e !important;
-}
-[data-accent="green"] .border-orange-500,
-[data-accent="green"] .border-orange-200 {
-  border-color: #22c55e !important;
-}
-[data-accent="green"] .bg-orange-50,
-[data-accent="green"] .bg-orange-50\/80 {
-  background-color: #ECFFE0 !important;
-}
-[data-accent="green"] .from-orange-500 {
-  --tw-gradient-from: #22c55e var(--tw-gradient-from-position) !important;
-  --tw-gradient-to: rgb(34 197 94 / 0) var(--tw-gradient-to-position) !important;
-  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-from), var(--tw-gradient-to)) !important;
-}
-[data-accent="green"] .to-amber-500 {
-  --tw-gradient-to: #84cc16 var(--tw-gradient-to-position) !important;
+  --color-orange-500: #22c55e;
+  --color-orange-600: #16a34a;
+  --color-orange-400: #4ade80;
+  --color-orange-200: #bbf7d0;
+  --color-orange-50: #ECFFE0;
+  --color-orange-950: #052e16;
+  --color-amber-500: #84cc16;
 }
 
 [data-accent="blue"] {
   --color-brand: #3b82f6;
   --color-brand-hover: #2563eb;
-}
-[data-accent="blue"] .bg-orange-500,
-[data-accent="blue"] .dark\:bg-orange-500 {
-  background-color: #3b82f6 !important;
-}
-[data-accent="blue"] .hover\:bg-orange-600:hover,
-[data-accent="blue"] .dark\:hover\:bg-orange-600:hover {
-  background-color: #2563eb !important;
-}
-[data-accent="blue"] .text-orange-500,
-[data-accent="blue"] .text-orange-600,
-[data-accent="blue"] .text-orange-400,
-[data-accent="blue"] .dark\:text-orange-400,
-[data-accent="blue"] .dark\:text-orange-500 {
-  color: #3b82f6 !important;
-}
-[data-accent="blue"] .border-orange-500,
-[data-accent="blue"] .border-orange-200 {
-  border-color: #3b82f6 !important;
-}
-[data-accent="blue"] .bg-orange-50,
-[data-accent="blue"] .bg-orange-50\/80 {
-  background-color: #eff6ff !important;
-}
-[data-accent="blue"] .from-orange-500 {
-  --tw-gradient-from: #3b82f6 var(--tw-gradient-from-position) !important;
-  --tw-gradient-to: rgb(59 130 246 / 0) var(--tw-gradient-to-position) !important;
-  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-from), var(--tw-gradient-to)) !important;
-}
-[data-accent="blue"] .to-amber-500 {
-  --tw-gradient-to: #60a5fa var(--tw-gradient-to-position) !important;
+  --color-orange-500: #3b82f6;
+  --color-orange-600: #2563eb;
+  --color-orange-400: #60a5fa;
+  --color-orange-200: #bfdbfe;
+  --color-orange-50: #eff6ff;
+  --color-orange-950: #172554;
+  --color-amber-500: #38bdf8;
 }
 
 [data-accent="purple"] {
   --color-brand: #8b5cf6;
   --color-brand-hover: #7c3aed;
+  --color-orange-500: #8b5cf6;
+  --color-orange-600: #7c3aed;
+  --color-orange-400: #a78bfa;
+  --color-orange-200: #ddd6fe;
+  --color-orange-50: #f5f3ff;
+  --color-orange-950: #2e1065;
+  --color-amber-500: #c084fc;
 }
-[data-accent="purple"] .bg-orange-500,
-[data-accent="purple"] .dark\:bg-orange-500 {
-  background-color: #8b5cf6 !important;
-}
-[data-accent="purple"] .hover\:bg-orange-600:hover,
-[data-accent="purple"] .dark\:hover\:bg-orange-600:hover {
-  background-color: #7c3aed !important;
-}
-[data-accent="purple"] .text-orange-500,
-[data-accent="purple"] .text-orange-600,
-[data-accent="purple"] .text-orange-400,
-[data-accent="purple"] .dark\:text-orange-400,
-[data-accent="purple"] .dark\:text-orange-500 {
-  color: #8b5cf6 !important;
-}
-[data-accent="purple"] .border-orange-500,
-[data-accent="purple"] .border-orange-200 {
-  border-color: #8b5cf6 !important;
-}
-[data-accent="purple"] .bg-orange-50,
-[data-accent="purple"] .bg-orange-50\/80 {
-  background-color: #f5f3ff !important;
-}
-[data-accent="purple"] .from-orange-500 {
-  --tw-gradient-from: #8b5cf6 var(--tw-gradient-from-position) !important;
-  --tw-gradient-to: rgb(139 92 246 / 0) var(--tw-gradient-to-position) !important;
-  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-from), var(--tw-gradient-to)) !important;
-}
-[data-accent="purple"] .to-amber-500 {
-  --tw-gradient-to: #a78bfa var(--tw-gradient-to-position) !important;
-}
+
 
