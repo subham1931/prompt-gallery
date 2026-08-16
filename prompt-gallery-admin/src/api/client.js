@@ -143,3 +143,20 @@ export function listCategories() {
 export function createCategory(body) {
   return request('/api/categories', { method: 'POST', body: JSON.stringify(body) })
 }
+
+export async function getThemeAccent() {
+  try {
+    const { data } = await request('/api/settings/theme')
+    return data?.themeAccent || 'orange'
+  } catch {
+    return localStorage.getItem('pg_theme_accent') || 'orange'
+  }
+}
+
+export async function updateThemeAccent(themeAccent) {
+  const { data } = await request('/api/settings/theme', {
+    method: 'PUT',
+    body: JSON.stringify({ themeAccent }),
+  })
+  return data?.themeAccent || themeAccent
+}

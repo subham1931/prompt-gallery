@@ -81,3 +81,37 @@ body {
 .animate-spin-slow {
   animation: spin 1s linear infinite;
 }
+
+/* Dynamic Theme Accent Overrides */
+html[data-accent="green"] {
+  --color-orange: #22c55e;
+  --color-orange-dark: #16a34a;
+  --color-orange-tint: #ECFFE0;
+}
+html.dark[data-accent="green"] {
+  --color-orange: #4ade80;
+  --color-orange-dark: #22c55e;
+  --color-orange-tint: #143524;
+}
+
+html[data-accent="blue"] {
+  --color-orange: #3b82f6;
+  --color-orange-dark: #2563eb;
+  --color-orange-tint: #eff6ff;
+}
+html.dark[data-accent="blue"] {
+  --color-orange: #60a5fa;
+  --color-orange-dark: #3b82f6;
+  --color-orange-tint: #1e293b;
+}
+
+html[data-accent="purple"] {
+  --color-orange: #8b5cf6;
+  --color-orange-dark: #7c3aed;
+  --color-orange-tint: #f5f3ff;
+}
+html.dark[data-accent="purple"] {
+  --color-orange: #a78bfa;
+  --color-orange-dark: #8b5cf6;
+  --color-orange-tint: #2e1065;
+}

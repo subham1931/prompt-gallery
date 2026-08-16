@@ -13,6 +13,7 @@ import adminsRouter from './routes/admins.js'
 import promptsRouter from './routes/prompts.js'
 import categoriesRouter from './routes/categories.js'
 import uploadRouter from './routes/upload.js'
+import settingsRouter from './routes/settings.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -36,6 +37,7 @@ app.use('/api/admins', adminsRouter)
 app.use('/api/prompts', promptsRouter)
 app.use('/api/categories', categoriesRouter)
 app.use('/api/upload', uploadRouter)
+app.use('/api/settings', settingsRouter)
 
 app.use((err, _req, res, _next) => {
   console.error(err)

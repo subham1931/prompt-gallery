@@ -17,6 +17,7 @@ import Profile from './pages/Profile'
 import { SignIn, SignUp } from './pages/AuthPages'
 import AuthModal from './components/AuthModal'
 import { useAuth } from './context/AuthContext'
+import { getThemeAccent } from './api'
 
 function Layout() {
   const location = useLocation()
@@ -25,6 +26,17 @@ function Layout() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [location.pathname])
+
+  useEffect(() => {
+    const cached = localStorage.getItem('pg_theme_accent') || 'orange'
+    document.documentElement.setAttribute('data-accent', cached)
+    getThemeAccent().then((accent) => {
+      if (accent) {
+        document.documentElement.setAttribute('data-accent', accent)
+        localStorage.setItem('pg_theme_accent', accent)
+      }
+    })
+  }, [])
 
   return (
     <div className="liquid-bg-canvas flex min-h-screen flex-col bg-slate-50 dark:bg-[#090d16] text-slate-900 dark:text-white transition-colors duration-300">

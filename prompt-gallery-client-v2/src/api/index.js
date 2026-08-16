@@ -310,3 +310,12 @@ export async function searchPrompts(query) {
       (p.tags || []).some((t) => t.toLowerCase().includes(qLower)),
   )
 }
+
+export async function getThemeAccent() {
+  try {
+    const { data } = await request('/api/settings/theme')
+    return data?.themeAccent || 'orange'
+  } catch {
+    return localStorage.getItem('pg_theme_accent') || 'orange'
+  }
+}

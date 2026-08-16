@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { LayoutDashboard, LogOut, User } from 'lucide-react'
 import { ThemeToggle } from './ThemeToggle'
+import { ThemeAccentPicker } from './ThemeAccentPicker'
 import { NotificationMenu } from './NotificationMenu'
 import { AdminSidebar } from './AdminSidebar'
 import { useAuth } from '../context/AuthContext'
@@ -74,6 +75,7 @@ export function AdminHeader() {
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <ThemeAccentPicker />
             <ThemeToggle />
             <NotificationMenu />
 
