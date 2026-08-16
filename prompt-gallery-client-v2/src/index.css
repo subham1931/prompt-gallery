@@ -225,40 +225,58 @@ body {
 }
 
 /* Dynamic Theme Accent Overrides (Tailwind v4 Color Variables) */
+:root[data-accent="green"],
+html[data-accent="green"],
 [data-accent="green"] {
-  --color-brand: #22c55e;
-  --color-brand-hover: #16a34a;
-  --color-orange-500: #22c55e;
-  --color-orange-600: #16a34a;
-  --color-orange-400: #4ade80;
-  --color-orange-200: #bbf7d0;
-  --color-orange-50: #ECFFE0;
-  --color-orange-950: #052e16;
-  --color-amber-500: #84cc16;
+  --color-brand: #22c55e !important;
+  --color-brand-hover: #16a34a !important;
+  --color-orange-500: #22c55e !important;
+  --color-orange-600: #16a34a !important;
+  --color-orange-400: #4ade80 !important;
+  --color-orange-300: #86efac !important;
+  --color-orange-200: #bbf7d0 !important;
+  --color-orange-100: #dcfce7 !important;
+  --color-orange-50: #ECFFE0 !important;
+  --color-orange-950: #052e16 !important;
+  --color-amber-500: #84cc16 !important;
+  --color-amber-400: #a3e635 !important;
+  --color-amber-600: #65a30d !important;
 }
 
+:root[data-accent="blue"],
+html[data-accent="blue"],
 [data-accent="blue"] {
-  --color-brand: #3b82f6;
-  --color-brand-hover: #2563eb;
-  --color-orange-500: #3b82f6;
-  --color-orange-600: #2563eb;
-  --color-orange-400: #60a5fa;
-  --color-orange-200: #bfdbfe;
-  --color-orange-50: #eff6ff;
-  --color-orange-950: #172554;
-  --color-amber-500: #38bdf8;
+  --color-brand: #3b82f6 !important;
+  --color-brand-hover: #2563eb !important;
+  --color-orange-500: #3b82f6 !important;
+  --color-orange-600: #2563eb !important;
+  --color-orange-400: #60a5fa !important;
+  --color-orange-300: #93c5fd !important;
+  --color-orange-200: #bfdbfe !important;
+  --color-orange-100: #dbeafe !important;
+  --color-orange-50: #eff6ff !important;
+  --color-orange-950: #172554 !important;
+  --color-amber-500: #38bdf8 !important;
+  --color-amber-400: #38bdf8 !important;
+  --color-amber-600: #0284c7 !important;
 }
 
+:root[data-accent="purple"],
+html[data-accent="purple"],
 [data-accent="purple"] {
-  --color-brand: #8b5cf6;
-  --color-brand-hover: #7c3aed;
-  --color-orange-500: #8b5cf6;
-  --color-orange-600: #7c3aed;
-  --color-orange-400: #a78bfa;
-  --color-orange-200: #ddd6fe;
-  --color-orange-50: #f5f3ff;
-  --color-orange-950: #2e1065;
-  --color-amber-500: #c084fc;
+  --color-brand: #8b5cf6 !important;
+  --color-brand-hover: #7c3aed !important;
+  --color-orange-500: #8b5cf6 !important;
+  --color-orange-600: #7c3aed !important;
+  --color-orange-400: #a78bfa !important;
+  --color-orange-300: #c4b5fd !important;
+  --color-orange-200: #ddd6fe !important;
+  --color-orange-100: #ede9fe !important;
+  --color-orange-50: #f5f3ff !important;
+  --color-orange-950: #2e1065 !important;
+  --color-amber-500: #c084fc !important;
+  --color-amber-400: #c084fc !important;
+  --color-amber-600: #9333ea !important;
 }
 
 
