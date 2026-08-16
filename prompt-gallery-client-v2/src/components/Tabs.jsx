@@ -21,11 +21,11 @@ export default function Tabs({ tabs, activeTab, onChange }) {
   }, [])
 
   return (
-    <div className="sticky top-4 sm:top-6 z-40 my-4 sm:my-6 flex justify-center px-2 pointer-events-none transition-all duration-300">
+    <div className="sticky top-3 sm:top-6 z-40 my-3 sm:my-6 flex justify-center px-1.5 sm:px-2 pointer-events-none transition-all duration-300">
       <div
-        className={`pointer-events-auto inline-flex max-w-full items-center gap-1 sm:gap-2 rounded-full p-1.5 transition-all duration-500 ${
+        className={`pointer-events-auto inline-flex max-w-full items-center gap-0.5 sm:gap-2 rounded-full p-1 sm:p-1.5 transition-all duration-500 ${
           isSticky
-            ? 'bg-white/90 dark:bg-[#090d16]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-orange-500/40 shadow-xl dark:shadow-[0_12px_40px_rgba(0,0,0,0.7)] scale-[1.02]'
+            ? 'bg-white/90 dark:bg-[#090d16]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-orange-500/40 shadow-xl dark:shadow-[0_12px_40px_rgba(0,0,0,0.7)] scale-[1.01] sm:scale-[1.02]'
             : 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/80 shadow-xl scale-100'
         } overflow-x-auto scrollbar-hide`}
       >
@@ -38,7 +38,7 @@ export default function Tabs({ tabs, activeTab, onChange }) {
               key={tab.id}
               type="button"
               onClick={() => onChange(tab.id)}
-              className={`relative flex items-center gap-2 shrink-0 rounded-full px-5 sm:px-7 py-2.5 sm:py-3 text-xs font-extrabold uppercase tracking-widest transition-all duration-300 cursor-pointer ${
+              className={`relative flex items-center gap-1.5 sm:gap-2 shrink-0 rounded-full px-3 xs:px-4.5 sm:px-7 py-2 sm:py-3 text-[10px] xs:text-xs font-extrabold uppercase tracking-wider xs:tracking-widest transition-all duration-300 cursor-pointer ${
                 isActive
                   ? 'text-white shadow-md'
                   : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-900/5 dark:hover:bg-white/5'
@@ -52,8 +52,8 @@ export default function Tabs({ tabs, activeTab, onChange }) {
                 />
               )}
               <Icon
-                size={15}
-                className={`relative z-10 ${
+                size={13}
+                className={`relative z-10 sm:h-[15px] sm:w-[15px] ${
                   isActive ? 'text-white' : 'text-slate-400 dark:text-slate-400'
                 }`}
               />
