@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import mongoose from 'mongoose'
 import { Prompt } from '../models/Prompt.js'
 import { optionalAuth, requireAuth, requireStaff } from '../middleware/auth.js'
 
@@ -64,9 +65,27 @@ function normalizeBody(body = {}) {
   }
 }
 
+function getClientIp(req) {
+  const forwarded = req.headers['x-forwarded-for']
+  let ip = ''
+  if (forwarded) {
+    ip = String(forwarded).split(',')[0].trim()
+  } else {
+    ip = req.socket?.remoteAddress || req.ip || '127.0.0.1'
+  }
+  if (ip.startsWith('::ffff:')) {
+    ip = ip.slice(7)
+  }
+  if (ip === '::1' || ip === 'localhost') {
+    ip = '127.0.0.1'
+  }
+  return ip
+}
+
 /** GET /api/prompts */
 router.get('/', optionalAuth, async (req, res) => {
   try {
+    const clientIp = getClientIp(req)
     const {
       q,
       category,
@@ -133,7 +152,7 @@ router.get('/', optionalAuth, async (req, res) => {
     ])
 
     res.json({
-      data: docs.map((d) => d.toGalleryJSON()),
+      data: docs.map((d) => d.toGalleryJSON(clientIp, req.user)),
       total,
       page: pageNum,
       limit: limitNum,
@@ -159,34 +178,69 @@ router.get('/by-id/:id', ...requireStaff, async (req, res) => {
   }
 })
 
-/** POST /api/prompts/:id/like — toggle like (auth required) */
-router.post('/:id/like', requireAuth, async (req, res) => {
+/** POST /api/prompts/:id/like — toggle like by user and/or IP */
+router.post('/:id/like', optionalAuth, async (req, res) => {
   try {
-    const prompt = await Prompt.findById(req.params.id)
+    const paramId = String(req.params.id || '').trim()
+    let prompt = null
+
+    if (mongoose.Types.ObjectId.isValid(paramId)) {
+      prompt = await Prompt.findById(paramId)
+    }
+    if (!prompt) {
+      prompt = await Prompt.findOne({ slug: paramId.toLowerCase() })
+    }
+
     if (!prompt) {
       res.status(404).json({ error: 'Prompt not found' })
       return
     }
 
+    const clientIp = getClientIp(req)
     const promptId = String(prompt._id)
-    const likedIds = (req.user.likedPromptIds || []).map(String)
-    const alreadyLiked = likedIds.includes(promptId)
-
-    if (alreadyLiked) {
-      req.user.likedPromptIds = req.user.likedPromptIds.filter((id) => String(id) !== promptId)
-      prompt.likeCount = Math.max(0, (prompt.likeCount || 0) - 1)
-    } else {
-      req.user.likedPromptIds.push(prompt._id)
-      prompt.likeCount = (prompt.likeCount || 0) + 1
+    if (!Array.isArray(prompt.likedIps)) {
+      prompt.likedIps = []
     }
 
-    await Promise.all([req.user.save(), prompt.save()])
+    let liked = false
+
+    if (req.user) {
+      const likedIds = (req.user.likedPromptIds || []).map(String)
+      const alreadyUserLiked = likedIds.includes(promptId)
+      const alreadyIpLiked = prompt.likedIps.includes(clientIp)
+
+      if (alreadyUserLiked || alreadyIpLiked) {
+        req.user.likedPromptIds = req.user.likedPromptIds.filter((id) => String(id) !== promptId)
+        prompt.likedIps = prompt.likedIps.filter((ip) => ip !== clientIp)
+        prompt.likeCount = Math.max(0, (prompt.likeCount || 0) - 1)
+        liked = false
+      } else {
+        req.user.likedPromptIds.push(prompt._id)
+        if (clientIp && !alreadyIpLiked) prompt.likedIps.push(clientIp)
+        prompt.likeCount = (prompt.likeCount || 0) + 1
+        liked = true
+      }
+      await Promise.all([req.user.save(), prompt.save()])
+    } else {
+      const alreadyIpLiked = prompt.likedIps.includes(clientIp)
+
+      if (alreadyIpLiked) {
+        prompt.likedIps = prompt.likedIps.filter((ip) => ip !== clientIp)
+        prompt.likeCount = Math.max(0, (prompt.likeCount || 0) - 1)
+        liked = false
+      } else {
+        if (clientIp) prompt.likedIps.push(clientIp)
+        prompt.likeCount = (prompt.likeCount || 0) + 1
+        liked = true
+      }
+      await prompt.save()
+    }
 
     res.json({
       data: {
-        liked: !alreadyLiked,
+        liked,
         likeCount: prompt.likeCount,
-        user: req.user.toPublicJSON(),
+        user: req.user ? req.user.toPublicJSON() : null,
       },
     })
   } catch (err) {
@@ -198,6 +252,7 @@ router.post('/:id/like', requireAuth, async (req, res) => {
 /** GET /api/prompts/:slug */
 router.get('/:slug', optionalAuth, async (req, res) => {
   try {
+    const clientIp = getClientIp(req)
     const doc = await Prompt.findOne({ slug: req.params.slug.toLowerCase() })
     if (!doc) {
       res.status(404).json({ error: 'Prompt not found' })
@@ -209,7 +264,7 @@ router.get('/:slug', optionalAuth, async (req, res) => {
         return
       }
     }
-    res.json({ data: doc.toGalleryJSON() })
+    res.json({ data: doc.toGalleryJSON(clientIp, req.user) })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Failed to fetch prompt' })

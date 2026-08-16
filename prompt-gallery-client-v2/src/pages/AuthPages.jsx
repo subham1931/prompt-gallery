@@ -59,7 +59,7 @@ function AuthForm({ mode }) {
             </h1>
             <p className="mt-2 text-xs font-bold uppercase tracking-wider text-slate-400">
               {isSignup
-                ? 'Sign up to bookmark, copy, and like studio prompts.'
+                ? 'Sign up to bookmark and like studio prompts.'
                 : 'Sign in to access your curated prompt gallery.'}
             </p>
           </div>

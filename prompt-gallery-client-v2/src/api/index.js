@@ -104,16 +104,64 @@ export async function changePassword({ oldPassword, newPassword, confirmPassword
   })
 }
 
+export function getGuestLikedPromptIds() {
+  try {
+    return JSON.parse(localStorage.getItem('pg_guest_likes') || '[]')
+  } catch {
+    return []
+  }
+}
+
+export function syncGuestLikeState(promptId, isLiked) {
+  try {
+    const list = getGuestLikedPromptIds().map(String)
+    const strId = String(promptId)
+    let nextList
+    if (isLiked) {
+      nextList = list.includes(strId) ? list : [...list, strId]
+    } else {
+      nextList = list.filter((i) => i !== strId)
+    }
+    localStorage.setItem('pg_guest_likes', JSON.stringify(nextList))
+  } catch {
+    /* ignore */
+  }
+}
+
+function applyGuestLikedFlags(items) {
+  const guestLikes = getGuestLikedPromptIds().map(String)
+  if (Array.isArray(items)) {
+    return items.map((p) => ({
+      ...p,
+      liked: Boolean(p.liked || guestLikes.includes(String(p.id))),
+    }))
+  }
+  if (items && typeof items === 'object') {
+    return {
+      ...items,
+      liked: Boolean(items.liked || guestLikes.includes(String(items.id))),
+    }
+  }
+  return items
+}
+
 export async function togglePromptLike(promptId) {
   try {
     const { data } = await request(`/api/prompts/${encodeURIComponent(promptId)}/like`, {
       method: 'POST',
     })
+    if (typeof data?.liked === 'boolean') {
+      syncGuestLikeState(promptId, data.liked)
+    }
     return data
   } catch {
+    const guestLikes = getGuestLikedPromptIds().map(String)
+    const already = guestLikes.includes(String(promptId))
+    const isNowLiked = !already
+    syncGuestLikeState(promptId, isNowLiked)
     const p = mockPrompts.find((item) => String(item.id) === String(promptId))
     const currentLikes = p ? p.likeCount : 0
-    return { liked: true, likeCount: currentLikes + 1 }
+    return { liked: isNowLiked, likeCount: isNowLiked ? currentLikes + 1 : Math.max(0, currentLikes - 1) }
   }
 }
 
@@ -152,15 +200,16 @@ export async function getPrompts({ sort = 'latest', filter = null, limit = null 
     result = result.slice(0, limit)
   }
 
-  return result
+  return applyGuestLikedFlags(result)
 }
 
 export async function getPromptBySlug(slug) {
   try {
     const { data } = await request(`/api/prompts/${encodeURIComponent(slug)}`)
-    return data
+    return applyGuestLikedFlags(data)
   } catch {
-    return mockPrompts.find((p) => p.slug === slug) || null
+    const found = mockPrompts.find((p) => p.slug === slug) || null
+    return found ? applyGuestLikedFlags(found) : null
   }
 }
 

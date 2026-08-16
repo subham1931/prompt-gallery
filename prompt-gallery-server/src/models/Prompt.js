@@ -23,6 +23,7 @@ const promptSchema = new mongoose.Schema(
     author: { type: String, default: 'Prompt Gallery', trim: true },
     trending: { type: Boolean, default: false },
     likeCount: { type: Number, default: 0 },
+    likedIps: { type: [String], default: [] },
     aspect: {
       type: String,
       enum: ['portrait', 'square', 'tall', 'wide', 'landscape'],
@@ -57,6 +58,7 @@ promptSchema.index({ title: 'text', excerpt: 'text', tags: 'text', category: 'te
 promptSchema.index({ category: 1, status: 1 })
 promptSchema.index({ tool: 1 })
 promptSchema.index({ trending: 1 })
+promptSchema.index({ likedIps: 1 })
 
 promptSchema.pre('validate', function ensureExcerpt(next) {
   if (!this.excerpt && this.promptText) {
@@ -65,8 +67,10 @@ promptSchema.pre('validate', function ensureExcerpt(next) {
   next()
 })
 
-promptSchema.methods.toGalleryJSON = function toGalleryJSON() {
+promptSchema.methods.toGalleryJSON = function toGalleryJSON(clientIp = '', user = null) {
   const obj = this.toObject({ virtuals: false })
+  const userLiked = Boolean(user && user.likedPromptIds?.map(String).includes(String(obj._id)))
+  const ipLiked = Boolean(clientIp && obj.likedIps?.includes(clientIp))
   return {
     id: String(obj._id),
     slug: obj.slug,
@@ -76,7 +80,8 @@ promptSchema.methods.toGalleryJSON = function toGalleryJSON() {
     tool: obj.tool,
     author: obj.author,
     date: obj.createdAt ? new Date(obj.createdAt).toISOString().slice(0, 10) : '',
-    likeCount: obj.likeCount,
+    liked: userLiked || ipLiked,
+    likeCount: obj.likeCount || 0,
     image: obj.images?.[0]?.url || '',
     aspect: obj.aspect,
     excerpt: obj.excerpt,

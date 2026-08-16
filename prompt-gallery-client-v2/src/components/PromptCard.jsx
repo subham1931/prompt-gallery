@@ -17,6 +17,7 @@ export default function PromptCard({
   title,
   category,
   likeCount,
+  liked: likedProp = false,
   slug,
   promptText,
   excerpt,
@@ -24,10 +25,10 @@ export default function PromptCard({
   aspect = 'portrait',
   index = 0,
 }) {
-  const { user, requireAuth, updateUser } = useAuth()
+  const { user, updateUser } = useAuth()
   const ratioClass = aspectClasses[aspect] || aspectClasses.portrait
   const [likes, setLikes] = useState(likeCount || 0)
-  const [liked, setLiked] = useState(false)
+  const [liked, setLiked] = useState(() => Boolean(likedProp))
   const [copied, setCopied] = useState(false)
   const [shared, setShared] = useState(false)
   const [liking, setLiking] = useState(false)
@@ -39,59 +40,58 @@ export default function PromptCard({
   }, [likeCount])
 
   useEffect(() => {
-    setLiked(Boolean(id && user?.likedPromptIds?.includes(String(id))))
-  }, [id, user])
+    if (user) {
+      setLiked(Boolean(id && user.likedPromptIds?.includes(String(id))))
+    } else {
+      setLiked(Boolean(likedProp))
+    }
+  }, [id, user, likedProp])
 
-  const handleLike = (e) => {
+  const handleLike = async (e) => {
     e.preventDefault()
     e.stopPropagation()
-    requireAuth(async () => {
-      if (!id || liking) return
-      setLiking(true)
-      try {
-        const data = await togglePromptLike(id)
-        setLiked(data.liked)
-        setLikes(data.likeCount)
-        if (data.user) updateUser(data.user)
-      } catch {
-        /* keep prior UI */
-      } finally {
-        setLiking(false)
-      }
-    })
+    if (!id || liking) return
+    setLiking(true)
+    try {
+      const data = await togglePromptLike(id)
+      setLiked(data.liked)
+      setLikes(data.likeCount)
+      if (data.user) updateUser(data.user)
+    } catch {
+      setLiked((prev) => !prev)
+      setLikes((prev) => (liked ? Math.max(0, prev - 1) : prev + 1))
+    } finally {
+      setLiking(false)
+    }
   }
 
-  const handleCopy = (e) => {
+  const handleCopy = async (e) => {
     e.preventDefault()
     e.stopPropagation()
-    requireAuth(async () => {
-      try {
-        await navigator.clipboard.writeText(copyText)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 1500)
-      } catch {
-        setCopied(false)
-      }
-    })
+    try {
+      await navigator.clipboard.writeText(copyText)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      setCopied(false)
+    }
   }
 
-  const handleShare = (e) => {
+  const handleShare = async (e) => {
     e.preventDefault()
     e.stopPropagation()
-    requireAuth(async () => {
-      const url = `${window.location.origin}/prompt/${slug}`
-      try {
-        if (navigator.share) {
-          await navigator.share({ title, text: excerpt, url })
-        } else {
-          await navigator.clipboard.writeText(url)
-          setShared(true)
-          setTimeout(() => setShared(false), 1500)
-        }
-      } catch {
-        /* user cancelled share */
+    const url = `${window.location.origin}/prompt/${slug}`
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, text: excerpt, url })
+      } else {
+        await navigator.clipboard.writeText(url)
+        setShared(true)
+        setTimeout(() => setShared(false), 1500)
       }
-    })
+    } catch {
+      /* user cancelled share */
+    }
   }
 
   return (

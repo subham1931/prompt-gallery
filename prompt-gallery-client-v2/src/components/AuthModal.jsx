@@ -96,7 +96,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode = 'signin
           </h2>
           <p className="mt-1.5 text-xs font-semibold text-slate-400">
             {isSignup
-              ? 'Sign up to copy, bookmark, and save AI prompts'
+              ? 'Sign up to like, bookmark, and save AI prompts'
               : 'Sign in to access your curated prompt collection'}
           </p>
         </div>

@@ -12,7 +12,7 @@ import PageTransition from '../components/PageTransition'
 
 export default function PromptDetail() {
   const { slug } = useParams()
-  const { user, requireAuth, updateUser } = useAuth()
+  const { user, updateUser } = useAuth()
   const [prompt, setPrompt] = useState(null)
   const [related, setRelated] = useState([])
   const [likes, setLikes] = useState(0)
@@ -29,6 +29,7 @@ export default function PromptDetail() {
       if (data) {
         setPrompt(data)
         setLikes(data.likeCount || 0)
+        setLiked(Boolean(data.liked))
       } else {
         setPrompt(null)
       }
@@ -41,12 +42,12 @@ export default function PromptDetail() {
   }, [slug])
 
   useEffect(() => {
-    if (!prompt?.id || !user) {
-      setLiked(false)
-      return
+    if (user && prompt?.id) {
+      setLiked(Boolean(user.likedPromptIds?.includes(String(prompt.id))))
+    } else if (prompt) {
+      setLiked(Boolean(prompt.liked))
     }
-    setLiked(Boolean(user.likedPromptIds?.includes(String(prompt.id))))
-  }, [prompt?.id, user])
+  }, [prompt, user])
 
   if (loading) {
     return (
@@ -80,38 +81,35 @@ export default function PromptDetail() {
     day: 'numeric',
   })
 
-  const handleLike = () => {
-    requireAuth(async () => {
-      if (!prompt.id || liking) return
-      setLiking(true)
-      try {
-        const data = await togglePromptLike(prompt.id)
-        setLiked(data.liked)
-        setLikes(data.likeCount)
-        if (data.user) updateUser(data.user)
-      } catch {
-        /* keep prior UI */
-      } finally {
-        setLiking(false)
-      }
-    })
+  const handleLike = async () => {
+    if (!prompt?.id || liking) return
+    setLiking(true)
+    try {
+      const data = await togglePromptLike(prompt.id)
+      setLiked(data.liked)
+      setLikes(data.likeCount)
+      if (data.user) updateUser(data.user)
+    } catch {
+      setLiked((prev) => !prev)
+      setLikes((prev) => (liked ? Math.max(0, prev - 1) : prev + 1))
+    } finally {
+      setLiking(false)
+    }
   }
 
-  const handleShare = () => {
-    requireAuth(async () => {
-      const url = `${window.location.origin}/prompt/${prompt.slug}`
-      try {
-        if (navigator.share) {
-          await navigator.share({ title: prompt.title, text: prompt.excerpt, url })
-        } else {
-          await navigator.clipboard.writeText(url)
-          setShared(true)
-          setTimeout(() => setShared(false), 1500)
-        }
-      } catch {
-        /* cancelled */
+  const handleShare = async () => {
+    const url = `${window.location.origin}/prompt/${prompt.slug}`
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: prompt.title, text: prompt.excerpt, url })
+      } else {
+        await navigator.clipboard.writeText(url)
+        setShared(true)
+        setTimeout(() => setShared(false), 1500)
       }
-    })
+    } catch {
+      /* cancelled */
+    }
   }
 
   return (
