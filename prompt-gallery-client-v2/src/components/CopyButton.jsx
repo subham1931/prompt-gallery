@@ -21,17 +21,21 @@ export default function CopyButton({ text, className = '' }) {
       onClick={handleCopy}
       whileTap={{ scale: 0.96 }}
       transition={{ duration: 0.1 }}
-      className={`inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-accent-hover active:bg-accent-hover ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-extrabold uppercase tracking-wider transition-all shadow-md cursor-pointer border-none ${
+        copied
+          ? 'bg-emerald-500 text-white'
+          : 'bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-500 dark:text-white dark:hover:bg-orange-600'
+      } ${className}`}
     >
       {copied ? (
         <>
-          <Check size={16} />
-          Copied!
+          <Check size={14} />
+          <span>Copied!</span>
         </>
       ) : (
         <>
-          <Copy size={16} />
-          Copy
+          <Copy size={14} />
+          <span>Copy</span>
         </>
       )}
     </motion.button>
