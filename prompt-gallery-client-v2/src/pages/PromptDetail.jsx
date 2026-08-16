@@ -171,15 +171,15 @@ export default function PromptDetail() {
                 </p>
 
                 {/* Prompt Terminal Box */}
-                <div className="mt-6 rounded-3xl glass-card border border-white/80 dark:border-slate-800 p-5 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                <div className="mt-6 rounded-3xl glass-card border border-white/80 dark:border-slate-800 p-3.5 sm:p-5 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
                       OPTIMIZED AI COMMAND
                     </span>
                     <CopyButton text={prompt.promptText} />
                   </div>
 
-                  <div className="rounded-2xl bg-slate-950 p-4 font-mono text-xs text-slate-200 leading-relaxed shadow-inner border border-slate-800">
+                  <div className="rounded-2xl bg-slate-950 p-3.5 sm:p-4 font-mono text-xs text-slate-200 leading-relaxed shadow-inner border border-slate-800 break-words whitespace-pre-wrap">
                     {prompt.promptText}
                   </div>
                 </div>

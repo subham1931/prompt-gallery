@@ -164,7 +164,7 @@ export default function Header() {
           <div ref={searchRef} className="flex justify-end">
             <div
               className={`flex items-center transition-all duration-300 ease-out ${
-                searchOpen ? 'w-36 xs:w-44 sm:w-64 lg:w-80' : 'w-9'
+                searchOpen ? 'w-[calc(100vw-135px)] xs:w-44 sm:w-64 lg:w-80' : 'w-9'
               }`}
             >
               {searchOpen ? (

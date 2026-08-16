@@ -110,7 +110,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
       <div
         ref={dialogRef}
-        className="w-full max-w-md overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl"
+        className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl scrollbar-hide"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--color-border)] px-5 py-4">

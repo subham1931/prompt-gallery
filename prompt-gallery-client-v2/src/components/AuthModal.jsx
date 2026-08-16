@@ -74,7 +74,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode = 'signin
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-md animate-in fade-in duration-200">
       <div
         ref={modalRef}
-        className="w-full max-w-md overflow-hidden rounded-3xl border border-white/10 dark:border-slate-800 bg-[#090d16]/95 text-white shadow-2xl p-6 sm:p-8 relative"
+        className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl border border-white/10 dark:border-slate-800 bg-[#090d16]/95 text-white shadow-2xl p-6 sm:p-8 relative scrollbar-hide"
       >
         {/* Close Button */}
         <button

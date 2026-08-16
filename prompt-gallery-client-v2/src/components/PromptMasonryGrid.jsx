@@ -4,8 +4,9 @@ import PromptCard from './PromptCard'
 const breakpointCols = {
   default: 4,
   1280: 3,
+  1024: 3,
   768: 2,
-  767: 1,
+  540: 1,
 }
 
 export default function PromptMasonryGrid({ prompts, startIndex = 0 }) {
