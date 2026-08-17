@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Eye, Loader2, Save } from 'lucide-react'
 import { AdminHeader } from '../components/AdminHeader'
 import { Badge } from '../components/ui/Badge'
+import { Card } from '../components/ui/Card'
 import { PromptTextCard } from '../components/PromptTextCard'
 import { TitleUrlCard } from '../components/TitleUrlCard'
 import { ImagesCard } from '../components/ImagesCard'
@@ -105,6 +106,7 @@ export default function PromptEditor() {
   const [slug, setSlug] = useState('')
   const [slugEdited, setSlugEdited] = useState(false)
   const [promptText, setPromptText] = useState('')
+  const [description, setDescription] = useState('')
   const [aiModel, setAiModel] = useState('ChatGPT')
   const [category, setCategory] = useState('Cinematic')
   const [categoryOptions, setCategoryOptions] = useState([])
@@ -166,6 +168,7 @@ export default function PromptEditor() {
         setSlug(data.slug || '')
         setSlugEdited(true)
         setPromptText(data.promptText || '')
+        setDescription(data.description || data.excerpt || '')
         setAiModel(data.tool || 'ChatGPT')
         setCategory(data.category || 'Cinematic')
         setTags((data.tags || []).join(', '))
@@ -355,6 +358,8 @@ export default function PromptEditor() {
       title: title.trim(),
       slug: slug.trim(),
       promptText: promptText.trim(),
+      description: description.trim(),
+      excerpt: description.trim(),
       tool: aiModel,
       aiModel,
       category,
@@ -488,6 +493,24 @@ export default function PromptEditor() {
                   setPromptText(v)
                 }}
               />
+            </div>
+            <div data-field="description">
+              <Card title="Description" description="Brief summary or creative guidance for this prompt.">
+                <textarea
+                  value={description}
+                  onChange={(e) => {
+                    clearFieldError('description')
+                    setDescription(e.target.value)
+                  }}
+                  rows={3}
+                  placeholder="Describe what this prompt generates or instructions for best output…"
+                  className="w-full resize-y rounded-lg border border-border bg-surface-muted px-3.5 py-3 font-mono text-[13px] leading-[1.65] text-ink outline-none transition-[border-color,box-shadow] focus:border-orange focus:bg-surface focus:shadow-[0_0_0_3px_var(--color-orange-tint)]"
+                />
+                <div className="mt-2 flex items-center justify-between text-[11px] text-mute-light">
+                  <span>Optional overview for gallery details</span>
+                  <span>{description.length} characters</span>
+                </div>
+              </Card>
             </div>
             <div data-field="title">
               <TitleUrlCard

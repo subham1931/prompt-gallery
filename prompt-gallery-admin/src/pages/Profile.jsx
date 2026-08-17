@@ -2,17 +2,13 @@ import { LogOut } from 'lucide-react'
 import { AdminHeader } from '../components/AdminHeader'
 import { useAuth } from '../context/AuthContext'
 
-function FieldRow({ label, children, last = false }) {
+function FieldRow({ label, children }) {
   return (
-    <div
-      className={`grid grid-cols-1 gap-1.5 px-5 py-4 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-6 ${
-        last ? '' : 'border-b border-border'
-      }`}
-    >
-      <div className="text-[12px] font-semibold tracking-[0.02em] text-mute-light uppercase sm:text-[13px] sm:normal-case sm:tracking-normal sm:font-medium sm:text-mute">
+    <div className="grid grid-cols-1 gap-1.5 py-4 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-6">
+      <div className="text-sm font-normal text-zinc-400">
         {label}
       </div>
-      <div className="min-w-0 text-[13.5px] text-ink">{children}</div>
+      <div className="min-w-0 text-sm text-zinc-100">{children}</div>
     </div>
   )
 }
@@ -44,68 +40,78 @@ export default function Profile() {
       : ['Prompts', 'Categories', 'Uploads']
 
   return (
-    <div className="min-h-screen bg-bg text-ink">
+    <div className="min-h-screen bg-zinc-950 text-zinc-50">
       <AdminHeader />
 
-      <div className="mx-auto max-w-[1180px] px-4 pt-5 pb-28 sm:px-6 sm:pt-[26px] md:pb-20 md:pl-20">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mx-auto max-w-[1180px] px-4 pt-5 pb-28 sm:px-6 sm:pt-8 md:pb-20 md:pl-20">
+        {/* Page Header */}
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="m-0 text-xl font-bold tracking-[-0.02em]">Account</h1>
-            <p className="mt-1 mb-0 text-[13px] text-mute">
+            <h1 className="text-2xl font-semibold tracking-tight text-zinc-50">Account</h1>
+            <p className="mt-1 text-sm text-zinc-400">
               Signed in to Prompt Gallery CMS
             </p>
           </div>
+
           <button
             type="button"
             onClick={signOut}
-            className="inline-flex h-9 w-fit cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-surface px-3.5 text-[13px] font-semibold text-mute transition-colors hover:bg-surface-muted hover:text-ink"
+            className="inline-flex items-center gap-2 rounded-md border border-zinc-800 bg-transparent px-3 py-1.5 text-sm font-medium text-zinc-200 transition-colors hover:bg-zinc-800 cursor-pointer"
           >
-            <LogOut size={14} />
+            <LogOut size={16} />
             Sign out
           </button>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-border bg-surface">
-          <div className="flex items-center gap-4 border-b border-border px-5 py-5">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-surface-subtle text-[13px] font-bold tracking-wide text-ink">
+        {/* shadcn Card Container */}
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6 shadow-none">
+          {/* User Info Header Header */}
+          <div className="flex items-center gap-4 pb-6 border-b border-zinc-800">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-sm font-medium text-zinc-100">
               {initials}
             </div>
             <div className="min-w-0">
-              <div className="truncate text-[15px] font-semibold tracking-[-0.01em]">
+              <div className="truncate text-base font-semibold text-zinc-50">
                 {user.name}
               </div>
-              <div className="mt-0.5 truncate text-[13px] text-mute">{user.email}</div>
+              <div className="mt-0.5 truncate text-sm text-zinc-400 font-mono">{user.email}</div>
             </div>
           </div>
 
-          <FieldRow label="Role">
-            <span className="inline-flex items-center gap-2">
-              <span className="font-medium">{roleLabel}</span>
-              <span className="text-mute-light">·</span>
-              <span className="text-mute">
-                {isSuperadmin ? 'Full CMS + staff management' : 'CMS content management'}
-              </span>
-            </span>
-          </FieldRow>
+          {/* Divided Rows */}
+          <div className="divide-y divide-zinc-800">
+            <FieldRow label="Role">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span className="inline-flex items-center rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-900">
+                  {roleLabel}
+                </span>
+                <span className="text-sm text-zinc-400">
+                  {isSuperadmin ? 'Full CMS + staff management' : 'CMS content management'}
+                </span>
+              </div>
+            </FieldRow>
 
-          <FieldRow label="Email">
-            <span className="font-mono text-[13px]">{user.email}</span>
-          </FieldRow>
+            <FieldRow label="Email">
+              <span className="font-mono text-sm text-zinc-100">{user.email}</span>
+            </FieldRow>
 
-          <FieldRow label="Member since">{joined}</FieldRow>
+            <FieldRow label="Member since">
+              <span className="text-sm text-zinc-100">{joined}</span>
+            </FieldRow>
 
-          <FieldRow label="Permissions" last>
-            <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
-              {permissions.map((item) => (
-                <li
-                  key={item}
-                  className="rounded-md border border-border bg-surface-muted px-2.5 py-1 text-[12px] font-medium text-ink"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </FieldRow>
+            <FieldRow label="Permissions">
+              <div className="flex flex-wrap gap-2 py-0.5">
+                {permissions.map((item) => (
+                  <span
+                    key={item}
+                    className="inline-flex items-center rounded-md border border-zinc-700 bg-transparent px-2.5 py-0.5 text-xs text-zinc-300 font-normal"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </FieldRow>
+          </div>
         </div>
       </div>
     </div>
