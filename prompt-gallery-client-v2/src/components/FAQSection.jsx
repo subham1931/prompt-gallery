@@ -1,34 +1,35 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, HelpCircle, Sparkles } from 'lucide-react'
+import { getFaqs } from '../api'
 
-const FAQS = [
+const DEFAULT_FAQS = [
   {
-    id: 'faq-1',
+    _id: 'faq-1',
     question: 'What is Prompt Gallery and how do I use it?',
     answer:
       'Prompt Gallery is a curated repository of battle-tested AI prompts engineered specifically for Midjourney, ChatGPT, and Gemini. Simply click the "Copy" button on any prompt card, paste it directly into your AI generator, and press enter to produce high-quality AI images and text.',
   },
   {
-    id: 'faq-2',
+    _id: 'faq-2',
     question: 'Are these prompts compatible with ChatGPT, Midjourney, and Gemini?',
     answer:
       'Yes! Every prompt in our collection is optimized for major AI models including Midjourney (v5 & v6), OpenAI ChatGPT (DALL-E 3), and Google Gemini Image generation. Each prompt is tagged with its primary target model.',
   },
   {
-    id: 'faq-3',
+    _id: 'faq-3',
     question: 'Can I use generated images for commercial projects?',
     answer:
       'Absolutely. All prompts available on Prompt Gallery are free to use for personal, commercial, client, and commercial advertising projects without copyright restrictions.',
   },
   {
-    id: 'faq-4',
+    _id: 'faq-4',
     question: 'How often is new content added to the gallery?',
     answer:
       'Our team and automated publishers add new studio-tested prompts daily across 15+ aesthetic categories including Cinematic, Portraits, Editorial Fashion, Landscapes, and Digital Art.',
   },
   {
-    id: 'faq-5',
+    _id: 'faq-5',
     question: 'Do I need a paid subscription to access these prompts?',
     answer:
       'No subscription is required! You can browse, search, and copy any prompt in our library 100% free with 1-click copy functionality.',
@@ -36,7 +37,19 @@ const FAQS = [
 ]
 
 export default function FAQSection() {
+  const [faqs, setFaqs] = useState(DEFAULT_FAQS)
   const [openId, setOpenId] = useState('faq-1')
+
+  useEffect(() => {
+    getFaqs()
+      .then((data) => {
+        if (data && data.length) {
+          setFaqs(data)
+          setOpenId(data[0]._id || data[0].id)
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   const toggle = (id) => {
     setOpenId((prev) => (prev === id ? null : id))
@@ -44,7 +57,6 @@ export default function FAQSection() {
 
   return (
     <section className="relative py-16 lg:py-24 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-      {/* Header */}
       <div className="text-center max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-2 rounded-full border border-orange-200/80 bg-orange-50/80 px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-widest text-orange-600 dark:border-orange-900/50 dark:bg-orange-950/50 dark:text-orange-400 mb-4">
           <HelpCircle size={13} />
@@ -60,14 +72,14 @@ export default function FAQSection() {
         </p>
       </div>
 
-      {/* Accordion Container */}
       <div className="mt-10 flex flex-col gap-4">
-        {FAQS.map((faq, i) => {
-          const isOpen = openId === faq.id
+        {faqs.map((faq, i) => {
+          const faqId = faq._id || faq.id || `faq-${i}`
+          const isOpen = openId === faqId
 
           return (
             <motion.div
-              key={faq.id}
+              key={faqId}
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -80,7 +92,7 @@ export default function FAQSection() {
             >
               <button
                 type="button"
-                onClick={() => toggle(faq.id)}
+                onClick={() => toggle(faqId)}
                 className="flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left font-display text-base font-extrabold text-slate-900 dark:text-white"
               >
                 <span className="flex items-center gap-3">

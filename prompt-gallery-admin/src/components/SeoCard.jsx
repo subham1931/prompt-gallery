@@ -46,99 +46,101 @@ export function SeoCard({
       collapsible={false}
       right={
         <span
-          className={`rounded-md px-2 py-0.5 text-[11px] font-semibold ${
+          className={`rounded-md px-2 py-0.5 text-xs font-semibold ${
             seoScore >= 80
-              ? 'bg-green-tint text-green'
+              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
               : seoScore >= 50
-                ? 'bg-orange-tint text-orange-dark'
-                : 'bg-[#FEECEC] text-red'
+                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                : 'bg-red-950/40 text-red-400 border border-red-900/40'
           }`}
         >
           {seoScore}
         </span>
       }
     >
-      <div className="mb-4 flex flex-col gap-1.5">
+      <div className="mb-5 flex flex-col gap-2">
         {checklist.map((c) => (
           <div
             key={c.label}
-            className={`flex items-center gap-2 text-[12px] ${
-              c.ok ? 'text-ink' : 'text-mute-light'
+            className={`flex items-center gap-2 text-xs ${
+              c.ok ? 'text-zinc-200' : 'text-zinc-500'
             }`}
           >
             <span
-              className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full ${
-                c.ok ? 'bg-green-tint text-green' : 'bg-surface-subtle text-mute-light'
+              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${
+                c.ok ? 'bg-emerald-500/20 text-emerald-400' : 'bg-zinc-800 text-zinc-500'
               }`}
             >
-              <Check size={9} strokeWidth={3} />
+              <Check size={10} strokeWidth={3} />
             </span>
             {c.label}
           </div>
         ))}
       </div>
 
-      <Field label="Meta title" counter={`${metaTitle.length}/60`}>
-        <TextInput
-          value={metaTitle}
-          onChange={(e) => setMetaTitle(e.target.value)}
-          maxLength={70}
-        />
-      </Field>
+      <div className="flex flex-col gap-5 pt-4 border-t border-zinc-800">
+        <Field label="Meta title" counter={`${metaTitle.length}/60`}>
+          <TextInput
+            value={metaTitle}
+            onChange={(e) => setMetaTitle(e.target.value)}
+            maxLength={70}
+          />
+        </Field>
 
-      <Field label="Meta description" counter={`${metaDesc.length}/160`}>
-        <TextArea
-          value={metaDesc}
-          onChange={(e) => setMetaDesc(e.target.value)}
-          rows={3}
-          maxLength={170}
-        />
-      </Field>
+        <Field label="Meta description" counter={`${metaDesc.length}/160`}>
+          <TextArea
+            value={metaDesc}
+            onChange={(e) => setMetaDesc(e.target.value)}
+            rows={3}
+            maxLength={170}
+          />
+        </Field>
 
-      <Field label="Focus keyword">
-        <TextInput value={focusKeyword} onChange={(e) => setFocusKeyword(e.target.value)} />
-      </Field>
+        <Field label="Focus keyword">
+          <TextInput value={focusKeyword} onChange={(e) => setFocusKeyword(e.target.value)} />
+        </Field>
 
-      <Field label="Secondary keywords" hint="Comma-separated">
-        <TextInput
-          value={secondaryKeywords}
-          onChange={(e) => setSecondaryKeywords(e.target.value)}
-        />
-      </Field>
+        <Field label="Secondary keywords" hint="Comma-separated">
+          <TextInput
+            value={secondaryKeywords}
+            onChange={(e) => setSecondaryKeywords(e.target.value)}
+          />
+        </Field>
 
-      <Field label="Canonical URL">
-        <TextInput
-          value={canonicalUrl}
-          onChange={(e) => setCanonicalUrl(e.target.value)}
-          placeholder="https://promptgallery.com/prompts/..."
-        />
-      </Field>
+        <Field label="Canonical URL">
+          <TextInput
+            value={canonicalUrl}
+            onChange={(e) => setCanonicalUrl(e.target.value)}
+            placeholder="https://promptgallery.com/prompts/..."
+          />
+        </Field>
 
-      <Field label="Robots">
-        <Pills value={robots} onChange={setRobots} options={['Index', 'NoIndex']} />
-      </Field>
+        <Field label="Robots">
+          <Pills value={robots} onChange={setRobots} options={['Index', 'NoIndex']} />
+        </Field>
 
-      <Field label="Open Graph title">
-        <TextInput value={ogTitle} onChange={(e) => setOgTitle(e.target.value)} />
-      </Field>
+        <Field label="Open Graph title">
+          <TextInput value={ogTitle} onChange={(e) => setOgTitle(e.target.value)} />
+        </Field>
 
-      <Field label="Open Graph description">
-        <TextArea value={ogDesc} onChange={(e) => setOgDesc(e.target.value)} rows={2} />
-      </Field>
+        <Field label="Open Graph description">
+          <TextArea value={ogDesc} onChange={(e) => setOgDesc(e.target.value)} rows={2} />
+        </Field>
 
-      <button
-        type="button"
-        onClick={onGenerateSeo}
-        disabled={generatingSeo}
-        className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-border bg-surface py-2 text-[13px] font-medium text-ink transition-colors hover:bg-surface-muted disabled:cursor-wait disabled:opacity-70"
-      >
-        {generatingSeo ? (
-          <Loader2 size={14} className="animate-spin-slow" />
-        ) : (
-          <Wand2 size={14} />
-        )}
-        {generatingSeo ? 'Generating…' : 'Generate SEO from details'}
-      </button>
+        <button
+          type="button"
+          onClick={onGenerateSeo}
+          disabled={generatingSeo}
+          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-zinc-800 bg-zinc-950 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-zinc-50 disabled:cursor-wait disabled:opacity-70"
+        >
+          {generatingSeo ? (
+            <Loader2 size={14} className="animate-spin" />
+          ) : (
+            <Wand2 size={14} />
+          )}
+          {generatingSeo ? 'Generating…' : 'Generate SEO from details'}
+        </button>
+      </div>
     </Card>
   )
 }

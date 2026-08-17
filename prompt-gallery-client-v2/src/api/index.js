@@ -319,3 +319,77 @@ export async function getThemeAccent() {
     return localStorage.getItem('pg_theme_accent') || 'orange'
   }
 }
+
+
+const mockBlogsList = [
+  {
+    id: 'blog-1',
+    title: 'Mastering Prompt Engineering for Midjourney v6',
+    slug: 'mastering-prompt-engineering-midjourney-v6',
+    author: 'Samim',
+    category: 'Midjourney',
+    coverImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80',
+    imageAltText: 'Midjourney v6 prompt guide cover',
+    shortDescription: 'Learn how to craft ultra-realistic cinematic lighting, camera parameters, and stylize parameters in Midjourney v6.',
+    description: '<p>Midjourney v6 brings unprecedented realism and text rendering capabilities to generative AI image creation. In this comprehensive guide, we cover exact parameter flags like <b>--style raw</b>, <b>--stylize 250</b>, and advanced 85mm lens prompt structures.</p><h2>1. Camera & Lighting Parameters</h2><p>Always specify your camera body, focal length, and lighting environment at the start of your prompt payload. For example: <i>"85mm portrait photograph, natural golden hour rim light, bokeh depth of field..."</i></p>',
+    h1: 'Mastering Prompt Engineering for Midjourney v6',
+    metaTitle: 'Mastering Prompt Engineering for Midjourney v6 | Prompt Gallery',
+    metaDesc: 'Learn how to craft ultra-realistic cinematic lighting and camera parameters in Midjourney v6.',
+    keywords: ['Midjourney v6', 'Prompt Engineering', 'AI Art'],
+    isPopular: true,
+    date: '2026-08-17',
+  },
+  {
+    id: 'blog-2',
+    title: 'Top 10 ChatGPT System Prompts for Developers & Designers',
+    slug: 'top-10-chatgpt-system-prompts-developers-designers',
+    author: 'Prompt Gallery Team',
+    category: 'ChatGPT',
+    coverImage: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1200&q=80',
+    imageAltText: 'ChatGPT System Prompts',
+    shortDescription: 'Discover battle-tested system prompts to turn ChatGPT into a senior full-stack engineer and UI/UX auditor.',
+    description: '<p>System prompts define the persona, constraints, and output format for ChatGPT conversations. By using structured role prompts, you can eliminate generic outputs and receive production-grade code reviews instantly.</p>',
+    h1: 'Top 10 ChatGPT System Prompts for Developers & Designers',
+    metaTitle: 'Top 10 ChatGPT System Prompts for Developers',
+    metaDesc: 'Discover battle-tested system prompts to turn ChatGPT into a senior full-stack engineer.',
+    keywords: ['ChatGPT', 'System Prompts', 'Coding'],
+    isPopular: true,
+    date: '2026-08-16',
+  }
+];
+
+export async function getBlogs(params = {}) {
+  try {
+    const qs = new URLSearchParams()
+    if (params.category) qs.set('category', params.category)
+    if (params.search) qs.set('search', params.search)
+    if (params.popular) qs.set('popular', 'true')
+    const query = qs.toString()
+    const { data } = await request('/api/blogs' + (query ? '?' + query : ''))
+    if (data && data.length) return data
+  } catch {
+    /* fallback to mock */
+  }
+  return mockBlogsList
+}
+
+export async function getBlogBySlug(slug) {
+  try {
+    const { data } = await request('/api/blogs/' + encodeURIComponent(slug))
+    if (data) return data
+  } catch {
+    /* fallback to mock */
+  }
+  return mockBlogsList.find((b) => b.slug === slug) || null
+}
+
+
+export async function getFaqs(params = {}) {
+  try {
+    const { data } = await request('/api/faqs')
+    if (data && data.length) return data
+  } catch {
+    /* fallback to mock */
+  }
+  return null
+}

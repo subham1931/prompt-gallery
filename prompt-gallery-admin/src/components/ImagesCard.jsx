@@ -35,12 +35,14 @@ export function ImagesCard({ images, onAdd, onUpdate, onReplace, onRemove, error
               )}
             </div>
 
-            <div className="mb-3">
+            <div className="mb-4">
               <UploadBox src={img.src} onFile={(file) => onReplace(img.id, file)} />
               {img.uploading && (
-                <p className="mt-1.5 mb-0 text-[11px] text-mute-light">Uploading to Cloudinary…</p>
+                <p className="mt-1.5 mb-0 text-[11px] text-zinc-400">Uploading to Cloudinary…</p>
               )}
             </div>
+
+            <div className="flex flex-col gap-5">
 
             <Field
               label="Image URL"
@@ -73,6 +75,7 @@ export function ImagesCard({ images, onAdd, onUpdate, onReplace, onRemove, error
                 onChange={(e) => onUpdate(img.id, 'filename', e.target.value)}
               />
             </Field>
+            </div>
           </div>
         ))}
       </div>

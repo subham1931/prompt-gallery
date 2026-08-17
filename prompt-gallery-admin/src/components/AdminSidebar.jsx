@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom'
-import { FolderOpen, Home, Shield } from 'lucide-react'
+import { FolderOpen, Home, Shield, FileText, HelpCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const items = [
   { to: '/', label: 'Prompts', icon: Home, match: (path) => path === '/' || path.startsWith('/prompts') },
+  { to: '/blogs', label: 'Blogs', icon: FileText, match: (path) => path.startsWith('/blogs') },
+  { to: '/faqs', label: 'FAQs', icon: HelpCircle, match: (path) => path.startsWith('/faqs') },
   {
     to: '/categories',
     label: 'Categories',

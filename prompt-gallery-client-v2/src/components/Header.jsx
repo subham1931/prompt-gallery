@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { Search, User, Sparkles, X, LogOut, Command } from 'lucide-react'
+import { Search, User, Sparkles, X, LogOut, Command, FileText } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import { useAuth } from '../context/AuthContext'
 import { useDebounce } from '../hooks/useDebounce'
@@ -209,6 +209,13 @@ export default function Header() {
             </div>
           </div>
 
+          <Link
+            to="/blogs"
+            className="inline-flex h-9 items-center gap-1.5 rounded-xl px-3 text-xs font-extrabold uppercase tracking-wider text-slate-700 hover:bg-slate-900/5 dark:text-slate-200 dark:hover:bg-white/10 transition-all no-underline"
+          >
+            <FileText size={14} className="text-orange-500" />
+            <span className="hidden sm:inline">Blogs</span>
+          </Link>
           <ThemeToggle />
 
           {/* User Auth state */}

@@ -1,13 +1,13 @@
 const tones = {
-  default: 'bg-surface-subtle text-mute',
-  orange: 'bg-orange-tint text-orange-dark',
-  green: 'bg-green-tint text-green',
+  default: 'border border-zinc-800 bg-zinc-800/70 text-zinc-300',
+  orange: 'border border-amber-500/20 bg-amber-500/10 text-amber-400',
+  green: 'border border-emerald-500/20 bg-emerald-500/10 text-emerald-400',
 }
 
 export function Badge({ children, tone = 'default' }) {
   return (
     <span
-      className={`rounded-[7px] px-[9px] py-[3px] text-[11.5px] font-bold tracking-[0.02em] ${tones[tone]}`}
+      className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium tracking-tight ${tones[tone] || tones.default}`}
     >
       {children}
     </span>

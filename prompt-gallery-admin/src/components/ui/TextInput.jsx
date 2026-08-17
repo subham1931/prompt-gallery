@@ -1,13 +1,13 @@
 import { useState } from 'react'
 
 const base =
-  'w-full rounded-[10px] border bg-surface-muted px-[13px] py-2.5 text-[13.5px] text-ink outline-none transition-[border-color,box-shadow,background] duration-150'
+  'w-full rounded-md border border-zinc-800 bg-zinc-950/80 px-3 py-2 text-xs font-mono text-zinc-100 placeholder:text-zinc-500 outline-none transition-colors duration-150'
 
 const focusOk =
-  'border-orange bg-surface shadow-[0_0_0_3px_var(--color-orange-tint)]'
+  'border-zinc-600 bg-zinc-950 ring-1 ring-zinc-600'
 
 const errorCls =
-  'border-red bg-[#FFF8F8] shadow-[0_0_0_3px_rgba(211,59,59,0.12)] dark:bg-[#2a1515]'
+  'border-red-900 bg-red-950/30 text-red-200 ring-1 ring-red-900'
 
 export function TextInput({ className = '', error = false, onFocus, onBlur, ...props }) {
   const [focused, setFocused] = useState(false)
@@ -24,7 +24,7 @@ export function TextInput({ className = '', error = false, onFocus, onBlur, ...p
         onBlur?.(e)
       }}
       className={`${base} ${
-        error ? errorCls : focused ? focusOk : 'border-border'
+        error ? errorCls : focused ? focusOk : 'border-zinc-800'
       } ${className}`}
       aria-invalid={error || undefined}
     />
@@ -46,7 +46,7 @@ export function TextArea({ className = '', error = false, onFocus, onBlur, ...pr
         onBlur?.(e)
       }}
       className={`${base} resize-y leading-relaxed ${
-        error ? errorCls : focused ? focusOk : 'border-border'
+        error ? errorCls : focused ? focusOk : 'border-zinc-800'
       } ${className}`}
       aria-invalid={error || undefined}
     />

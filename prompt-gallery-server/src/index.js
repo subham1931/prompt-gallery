@@ -14,6 +14,8 @@ import promptsRouter from './routes/prompts.js'
 import categoriesRouter from './routes/categories.js'
 import uploadRouter from './routes/upload.js'
 import settingsRouter from './routes/settings.js'
+import blogsRouter from './routes/blogs.js'
+import faqsRouter from './routes/faqs.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -38,6 +40,8 @@ app.use('/api/prompts', promptsRouter)
 app.use('/api/categories', categoriesRouter)
 app.use('/api/upload', uploadRouter)
 app.use('/api/settings', settingsRouter)
+app.use('/api/blogs', blogsRouter)
+app.use('/api/faqs', faqsRouter)
 
 app.use((err, _req, res, _next) => {
   console.error(err)
@@ -58,6 +62,8 @@ async function start() {
   try {
     const { seedCategoriesIfEmpty } = await import('./scripts/ensureCategories.js')
     await seedCategoriesIfEmpty()
+    const { seedFaqsIfEmpty } = await import('./scripts/ensureFaqs.js')
+    await seedFaqsIfEmpty()
   } catch (err) {
     console.warn('Category seed skipped:', err.message)
   }

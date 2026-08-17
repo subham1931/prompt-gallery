@@ -36,6 +36,12 @@ const promptSchema = new mongoose.Schema(
       default: 'published',
     },
     scheduledAt: { type: Date, default: null },
+    faqs: [
+      {
+        question: { type: String, default: '' },
+        answer: { type: String, default: '' },
+      },
+    ],
     images: { type: [imageSchema], default: [] },
     metaTitle: { type: String, default: '' },
     metaDesc: { type: String, default: '' },
@@ -101,6 +107,7 @@ promptSchema.methods.toGalleryJSON = function toGalleryJSON(clientIp = '', user 
     ogTitle: obj.ogTitle,
     ogDesc: obj.ogDesc,
     schemaChecks: obj.schemaChecks,
+    faqs: obj.faqs || [],
     createdAt: obj.createdAt,
     updatedAt: obj.updatedAt,
   }

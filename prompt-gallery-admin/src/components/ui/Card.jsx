@@ -12,7 +12,7 @@ export function Card({
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <section className="rounded-xl border border-border bg-surface">
+    <section className="rounded-lg border border-zinc-800 bg-zinc-900 shadow-none overflow-hidden">
       <div
         role={collapsible ? 'button' : undefined}
         tabIndex={collapsible ? 0 : undefined}
@@ -23,14 +23,12 @@ export function Card({
             setOpen((o) => !o)
           }
         }}
-        className={`flex items-start justify-between gap-3 px-5 py-4 select-none ${
-          collapsible ? 'cursor-pointer' : 'cursor-default'
-        }`}
+        className={'flex items-start justify-between gap-3 px-5 py-4 select-none ' + (collapsible ? 'cursor-pointer' : 'cursor-default')}
       >
         <div className="min-w-0">
-          <h3 className="m-0 text-[13px] font-semibold tracking-[-0.01em] text-ink">{title}</h3>
+          <h3 className="m-0 text-sm font-semibold tracking-tight text-zinc-50">{title}</h3>
           {description && (
-            <p className="mt-0.5 mb-0 text-[12px] leading-snug text-mute-light">{description}</p>
+            <p className="mt-0.5 mb-0 text-xs text-zinc-400 leading-normal">{description}</p>
           )}
         </div>
         <div className="flex shrink-0 items-center gap-2">
@@ -38,15 +36,13 @@ export function Card({
           {collapsible && (
             <ChevronDown
               size={16}
-              className={`text-mute-light transition-transform duration-150 ${
-                open ? 'rotate-0' : '-rotate-90'
-              }`}
+              className={'text-zinc-400 transition-transform duration-150 ' + (open ? 'rotate-0' : '-rotate-90')}
             />
           )}
         </div>
       </div>
       {open && (
-        <div className="border-t border-border px-5 pt-4 pb-5">{children}</div>
+        <div className="border-t border-zinc-800 px-5 pt-4 pb-5">{children}</div>
       )}
     </section>
   )

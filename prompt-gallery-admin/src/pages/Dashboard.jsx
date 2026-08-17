@@ -461,7 +461,7 @@ export default function Dashboard() {
             onConfirm={confirmDelete}
           />
 
-          <PromptPreviewModal
+          <PromptPreviewModal isEdit={true}
             prompt={previewPrompt}
             isOpen={Boolean(previewPrompt)}
             onClose={() => setPreviewPrompt(null)}

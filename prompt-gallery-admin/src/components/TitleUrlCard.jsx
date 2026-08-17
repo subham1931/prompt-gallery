@@ -1,3 +1,5 @@
+import { Select } from './ui/Select'
+import { ChevronDown } from 'lucide-react'
 import { Card } from './ui/Card'
 import { Field } from './ui/Field'
 import { TextInput } from './ui/TextInput'
@@ -33,6 +35,7 @@ export function TitleUrlCard({
   const tagsStr = tags || ''
   return (
     <Card title="Details" description="Title, URL, model, and gallery metadata.">
+      <div className="flex flex-col gap-5">
       {setStatus && (
         <Field
           label="Status"
@@ -112,22 +115,11 @@ export function TitleUrlCard({
         hint={!errors.category ? 'Primary gallery category for this prompt.' : undefined}
         error={errors.category}
       >
-        <select
+        <Select
           value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          aria-invalid={Boolean(errors.category) || undefined}
-          className={`w-full cursor-pointer rounded-[10px] border bg-surface-muted px-[13px] py-2.5 text-[13.5px] text-ink outline-none transition-[border-color,box-shadow] focus:bg-surface ${
-            errors.category
-              ? 'border-red shadow-[0_0_0_3px_rgba(211,59,59,0.12)]'
-              : 'border-border focus:border-orange focus:shadow-[0_0_0_3px_var(--color-orange-tint)]'
-          }`}
-        >
-          {categoryOptions.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+          onChange={setCategory}
+          options={categoryOptions}
+        />
       </Field>
 
       <Field label="Tags" hint="Comma-separated tags shown on the gallery card.">
@@ -144,6 +136,7 @@ export function TitleUrlCard({
         label="Mark as trending"
         sub='Adds "Trending" to the title/meta and signals freshness to Google'
       />
+      </div>
     </Card>
   )
 }

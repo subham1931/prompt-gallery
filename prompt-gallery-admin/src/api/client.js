@@ -160,3 +160,49 @@ export async function updateThemeAccent(themeAccent) {
   })
   return data?.themeAccent || themeAccent
 }
+
+export function listBlogs(params = {}) {
+  const qs = new URLSearchParams()
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && v !== '') qs.set(k, String(v))
+  })
+  const query = qs.toString()
+  return request('/api/blogs' + (query ? '?' + query : ''))
+}
+
+export function getBlogBySlug(slug) {
+  return request('/api/blogs/' + encodeURIComponent(slug))
+}
+
+export function createBlog(body) {
+  return request('/api/blogs', { method: 'POST', body: JSON.stringify(body) })
+}
+
+export function updateBlog(id, body) {
+  return request('/api/blogs/' + id, { method: 'PUT', body: JSON.stringify(body) })
+}
+
+export function deleteBlog(id) {
+  return request('/api/blogs/' + id, { method: 'DELETE' })
+}
+
+export function listFaqs(params = {}) {
+  const qs = new URLSearchParams()
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && v !== '') qs.set(k, String(v))
+  })
+  const query = qs.toString()
+  return request('/api/faqs' + (query ? '?' + query : ''))
+}
+
+export function createFaq(body) {
+  return request('/api/faqs', { method: 'POST', body: JSON.stringify(body) })
+}
+
+export function updateFaq(id, body) {
+  return request('/api/faqs/' + id, { method: 'PUT', body: JSON.stringify(body) })
+}
+
+export function deleteFaq(id) {
+  return request('/api/faqs/' + id, { method: 'DELETE' })
+}

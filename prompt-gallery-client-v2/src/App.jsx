@@ -9,6 +9,8 @@ import Home from './pages/Home'
 import PromptDetail from './pages/PromptDetail'
 import Library from './pages/Library'
 import Libraries from './pages/Libraries'
+import Blogs from './pages/Blogs'
+import BlogDetail from './pages/BlogDetail'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import PrivacyPolicy from './pages/PrivacyPolicy'
@@ -74,6 +76,8 @@ function Layout() {
               <Route path="/prompt/:slug" element={<PromptDetail />} />
               <Route path="/library/:categorySlug" element={<Library />} />
               <Route path="/libraries" element={<Libraries />} />
+              <Route path="/blogs" element={<Blogs />} />
+              <Route path="/blogs/:slug" element={<BlogDetail />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />

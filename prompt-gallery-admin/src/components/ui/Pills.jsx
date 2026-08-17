@@ -42,11 +42,12 @@ export function Pills({ value, onChange, options, multiple = false }) {
             key={opt}
             type="button"
             onClick={handleClick}
-            className={`cursor-pointer rounded-[9px] border px-[15px] py-2 text-[13px] font-semibold transition-all duration-150 ${
-              active
-                ? 'border-orange bg-orange-tint text-orange-dark shadow-xs'
-                : 'border-border bg-surface text-mute hover:border-border/80'
-            }`}
+            className={
+              'cursor-pointer rounded-md border px-3.5 py-1.5 text-xs font-medium transition-colors ' +
+              (active
+                ? 'border-zinc-700 bg-zinc-800 text-zinc-50 shadow-xs'
+                : 'border-zinc-800/80 bg-zinc-950/60 text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200')
+            }
           >
             {opt}
           </button>

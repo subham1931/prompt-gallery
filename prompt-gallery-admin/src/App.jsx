@@ -1,6 +1,9 @@
 import { Routes, Route } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
 import Categories from './pages/Categories'
+import Blogs from './pages/Blogs'
+import Faqs from './pages/Faqs'
+import BlogEditor from './pages/BlogEditor'
 import PromptEditor from './pages/PromptEditor'
 import Login from './pages/Login'
 import Admins from './pages/Admins'
@@ -16,6 +19,38 @@ export default function App() {
         element={
           <RequireStaff>
             <Dashboard />
+          </RequireStaff>
+        }
+      />
+      <Route
+        path="/faqs"
+        element={
+          <RequireStaff>
+            <Faqs />
+          </RequireStaff>
+        }
+      />
+      <Route
+        path="/blogs"
+        element={
+          <RequireStaff>
+            <Blogs />
+          </RequireStaff>
+        }
+      />
+      <Route
+        path="/blogs/new"
+        element={
+          <RequireStaff>
+            <BlogEditor />
+          </RequireStaff>
+        }
+      />
+      <Route
+        path="/blogs/:slug/edit"
+        element={
+          <RequireStaff>
+            <BlogEditor />
           </RequireStaff>
         }
       />

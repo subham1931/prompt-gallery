@@ -1,14 +1,17 @@
+import { useToast } from '../context/ToastContext'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Copy, Check } from 'lucide-react'
 
 export default function CopyButton({ text, className = '' }) {
+  const { pushToast } = useToast()
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text)
       setCopied(true)
+      pushToast('Prompt copied to clipboard!', 'success', 'Copied')
       setTimeout(() => setCopied(false), 1500)
     } catch {
       setCopied(false)

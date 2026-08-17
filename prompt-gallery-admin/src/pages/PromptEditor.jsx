@@ -1,3 +1,4 @@
+import { FaqBuilderCard } from '../components/FaqBuilderCard'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Eye, Loader2, Save } from 'lucide-react'
@@ -114,6 +115,7 @@ export default function PromptEditor() {
   const [trending, setTrending] = useState(false)
   const [status, setStatus] = useState('published')
   const [scheduledAt, setScheduledAt] = useState('')
+  const [faqs, setFaqs] = useState([])
   const [previewOpen, setPreviewOpen] = useState(false)
 
   const [metaTitle, setMetaTitle] = useState('')
@@ -547,6 +549,9 @@ export default function PromptEditor() {
                 categories={categoryOptions}
               />
             </div>
+            <div data-field="faqs">
+              <FaqBuilderCard faqs={faqs} onChange={setFaqs} />
+            </div>
             <div data-field="images">
               <ImagesCard
                 images={images}
@@ -604,7 +609,7 @@ export default function PromptEditor() {
         </div>
 
         {/* Bottom Action Footer Bar */}
-        <div className="mt-8 flex items-center justify-between rounded-2xl border border-border bg-surface p-4 shadow-sm">
+        <div className="mt-8 flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900 p-4 shadow-none">
           <div className="flex items-center gap-2">
             <Badge tone={seoTone}>SEO Score {seoScore}/100</Badge>
             <span className="hidden text-xs text-mute sm:inline">
@@ -616,14 +621,14 @@ export default function PromptEditor() {
             <button
               type="button"
               onClick={() => setPreviewOpen(true)}
-              className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-border bg-surface-muted px-4 py-2.5 text-xs font-bold text-mute transition-colors hover:bg-surface-subtle hover:text-ink"
+              className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-md border border-zinc-800 bg-zinc-950 px-4 py-2 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-100"
             >
               <Eye size={15} />
               Preview
             </button>
             <Link
               to="/"
-              className={`inline-flex items-center justify-center rounded-xl border border-border bg-surface-muted px-4 py-2.5 text-xs font-bold text-mute no-underline transition-colors hover:bg-surface-subtle hover:text-ink ${
+              className={`inline-flex items-center justify-center rounded-md border border-zinc-800 bg-zinc-950 px-4 py-2 text-xs font-medium text-zinc-300 no-underline transition-colors hover:bg-zinc-800 hover:text-zinc-100 ${
                 saving ? 'pointer-events-none opacity-50' : ''
               }`}
             >
@@ -633,7 +638,7 @@ export default function PromptEditor() {
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-orange px-5 py-2.5 text-xs font-bold text-white shadow-[0_3px_12px_rgba(255,122,0,0.35)] transition-all hover:bg-orange-dark hover:shadow-[0_4px_16px_rgba(255,122,0,0.45)] disabled:opacity-60 active:scale-[0.98]"
+              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md bg-emerald-600 px-5 py-2 text-xs font-semibold text-white transition-colors hover:bg-emerald-500 disabled:opacity-60"
             >
               {saving ? <Loader2 size={16} className="animate-spin-slow" /> : <Save size={16} />}
               <span>{saveLabel}</span>
@@ -643,6 +648,7 @@ export default function PromptEditor() {
       </div>
 
       <PromptPreviewModal
+        isEdit={isEdit}
         prompt={{
           title: title || 'Untitled Prompt',
           slug: slug || 'untitled',

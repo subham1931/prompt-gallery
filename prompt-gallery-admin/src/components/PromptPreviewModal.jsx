@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { Badge } from './ui/Badge'
 
-export function PromptPreviewModal({ prompt, isOpen, onClose }) {
+export function PromptPreviewModal({ prompt, isOpen, onClose, isEdit = false }) {
   const [copied, setCopied] = useState(false)
   const dialogRef = useRef(null)
 
@@ -208,15 +208,17 @@ export function PromptPreviewModal({ prompt, isOpen, onClose }) {
                 {prompt.createdAt ? new Date(prompt.createdAt).toLocaleDateString() : 'Recently'}
               </span>
 
-              <a
-                href={clientUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-surface-muted px-3 py-1.5 text-xs font-bold text-ink no-underline transition-colors hover:bg-orange hover:text-white"
-              >
-                <ExternalLink size={13} />
-                Open Live Page
-              </a>
+              {isEdit && prompt?.slug && prompt.slug !== 'untitled' && (
+                <a
+                  href={clientUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-200 no-underline transition-colors hover:bg-zinc-800 hover:text-zinc-50"
+                >
+                  <ExternalLink size={13} />
+                  Open Live Page
+                </a>
+              )}
             </div>
           </div>
         </div>

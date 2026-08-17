@@ -1,20 +1,15 @@
-export function Field({ label, hint, required, children, counter, error, className = '' }) {
+export function Field({ label, required, hint, counter, error, children }) {
   return (
-    <div className={`mb-4 last:mb-0 ${className}`}>
-      <div className="mb-1.5 flex items-baseline justify-between">
-        <label className={`text-[12px] font-semibold ${error ? 'text-red' : 'text-ink'}`}>
-          {label} {required && <span className="text-orange">*</span>}
+    <div className="flex flex-col">
+      <div className="mb-1.5 flex items-center justify-between">
+        <label className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
+          {label} {required && <span className="text-red-400">*</span>}
         </label>
-        {counter && (
-          <span className="text-[11px] font-medium text-mute-light">{counter}</span>
-        )}
+        {counter && <span className="text-[11px] font-mono text-zinc-500">{counter}</span>}
       </div>
-      {children}
-      {error ? (
-        <p className="mt-1 mb-0 text-[11px] font-medium text-red">{error}</p>
-      ) : hint ? (
-        <p className="mt-1 mb-0 text-[11px] text-mute-light">{hint}</p>
-      ) : null}
+      <div>{children}</div>
+      {hint && !error && <p className="mt-1.5 text-[11px] leading-normal text-zinc-400">{hint}</p>}
+      {error && <p className="mt-1.5 text-[11px] font-semibold text-red-400">{error}</p>}
     </div>
   )
 }
