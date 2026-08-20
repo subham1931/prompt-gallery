@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Heart, Share2, Check, Sparkles, Cpu, Layers } from 'lucide-react'
+import { Heart, Share2, Check, Sparkles, Cpu, Layers, FileText } from 'lucide-react'
 import { getPromptBySlug, getRelatedPrompts, getCategorySlug, togglePromptLike } from '../api'
 import { useAuth } from '../context/AuthContext'
 import Breadcrumb from '../components/Breadcrumb'
@@ -169,6 +169,18 @@ export default function PromptDetail() {
                 <p className="mt-2 text-xs font-semibold text-slate-400">
                   Published {formattedDate} • Verified Prompt Grade
                 </p>
+
+                {(prompt.description || prompt.excerpt) && (
+                  <div className="mt-4 rounded-2xl bg-slate-100/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 p-4">
+                    <h3 className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
+                      <FileText size={12} className="text-orange-500 dark:text-orange-400" />
+                      <span>Prompt Guidance & Overview</span>
+                    </h3>
+                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700 dark:text-slate-300 font-normal">
+                      {prompt.description || prompt.excerpt}
+                    </p>
+                  </div>
+                )}
 
                 {/* Prompt Terminal Box */}
                 <div className="mt-6 rounded-3xl glass-card border border-white/80 dark:border-slate-800 p-3.5 sm:p-5 space-y-3">
