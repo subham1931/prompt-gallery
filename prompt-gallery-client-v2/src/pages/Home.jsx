@@ -1,3 +1,4 @@
+import SeoHead from '../components/SeoHead'
 import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -76,6 +77,15 @@ export default function Home() {
 
   return (
     <PageTransition>
+      <SeoHead
+        title="PromptGallery — Curated AI Photo Editing Prompts"
+        metaTitle="PromptGallery — Curated AI Photo Editing Prompts"
+        description="Prompt Gallery is a curated repository of battle-tested AI prompts engineered specifically for Midjourney, ChatGPT, and Gemini."
+        metaDesc="Prompt Gallery is a curated repository of battle-tested AI prompts engineered specifically for Midjourney, ChatGPT, and Gemini."
+        canonicalUrl="https://prompt-gallery-v2.vercel.app/"
+        robots="index, follow"
+        type="website"
+      />
       <div className="space-y-6">
         
         {/* Liquid Systems Hero Section with 3D Prompt Stack */}

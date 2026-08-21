@@ -1,3 +1,4 @@
+import SeoHead from '../components/SeoHead'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -19,6 +20,15 @@ export default function Blogs() {
 
   return (
     <PageTransition>
+      <SeoHead
+        title="AI Guides & Prompt Engineering Articles — PromptGallery"
+        metaTitle="AI Guides & Prompt Engineering Articles — PromptGallery"
+        description="Read latest articles, tutorials, and guides on AI photo generation, Midjourney prompts, and ChatGPT prompt engineering."
+        metaDesc="Read latest articles, tutorials, and guides on AI photo generation, Midjourney prompts, and ChatGPT prompt engineering."
+        canonicalUrl="https://prompt-gallery-v2.vercel.app/blogs"
+        robots="index, follow"
+        type="website"
+      />
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Blogs & Guides' }]} />
 

@@ -1,3 +1,4 @@
+import SeoHead from '../components/SeoHead'
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { User, Calendar, ShieldCheck, Tag, ArrowLeft, Share2, Check, Sparkles } from 'lucide-react'

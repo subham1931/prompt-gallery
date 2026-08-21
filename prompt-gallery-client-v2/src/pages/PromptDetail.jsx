@@ -1,3 +1,4 @@
+import SeoHead from '../components/SeoHead'
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -115,6 +116,28 @@ export default function PromptDetail() {
   return (
     <PageTransition>
       <div>
+        <SeoHead
+          title={prompt.title}
+          metaTitle={prompt.metaTitle}
+          description={prompt.description || prompt.excerpt}
+          metaDesc={prompt.metaDesc}
+          canonicalUrl={prompt.canonicalUrl || ('https://prompt-gallery-v2.vercel.app/prompt/' + prompt.slug)}
+          robots={prompt.robots || 'index, follow'}
+          ogTitle={prompt.ogTitle}
+          ogDesc={prompt.ogDesc}
+          image={prompt.image}
+          type="article"
+          publishedTime={prompt.createdAt || prompt.date}
+          author={prompt.author}
+          faqs={prompt.faqs || []}
+          schemaChecks={prompt.schemaChecks || { Article: true, FAQPage: true, Breadcrumb: true }}
+          breadcrumbItems={[
+            { label: 'Home', to: '/' },
+            { label: 'Libraries', to: '/libraries' },
+            { label: prompt.category, to: '/library/' + categorySlug },
+            { label: prompt.title },
+          ]}
+        />
         <article className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
           <Breadcrumb
             items={[
